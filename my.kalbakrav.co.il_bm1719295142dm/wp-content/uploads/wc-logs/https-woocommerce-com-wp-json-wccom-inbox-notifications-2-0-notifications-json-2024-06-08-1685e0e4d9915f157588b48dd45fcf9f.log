@@ -1,0 +1,42 @@
+2024-06-08T09:24:38+00:00 ERROR Error getting data feed
+2024-06-08T09:24:38+00:00 ERROR WP_Error Object
+(
+    [errors] => Array
+        (
+            [http_request_failed] => Array
+                (
+                    [0] => cURL error 28: Operation timed out after 5000 milliseconds with 0 out of -1 bytes received
+                )
+
+        )
+
+    [error_data] => Array
+        (
+        )
+
+    [additional_data:protected] => Array
+        (
+        )
+
+)
+2024-06-08T09:24:43+00:00 ERROR Error getting data feed
+2024-06-08T09:24:43+00:00 ERROR WP_Error Object
+(
+    [errors] => Array
+        (
+            [http_request_failed] => Array
+                (
+                    [0] => cURL error 28: Operation timed out after 5000 milliseconds with 495 out of -1 bytes received
+                )
+
+        )
+
+    [error_data] => Array
+        (
+        )
+
+    [additional_data:protected] => Array
+        (
+        )
+
+)

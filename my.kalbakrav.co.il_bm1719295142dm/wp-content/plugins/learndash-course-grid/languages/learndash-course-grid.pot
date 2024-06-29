@@ -1,0 +1,697 @@
+# Copyright (C) 2024 LearnDash
+# This file is distributed under the same license as the LearnDash LMS - Course Grid plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: LearnDash LMS - Course Grid 2.0.9\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/learndash-course-grid\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-01-10T20:01:41+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.9.0\n"
+"X-Domain: learndash-course-grid\n"
+
+#. Plugin Name of the plugin
+#: includes/class-translations.php:25
+msgid "LearnDash LMS - Course Grid"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://www.learndash.com/"
+msgstr ""
+
+#. Description of the plugin
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:37
+msgid "Build LearnDash course grid easily."
+msgstr ""
+
+#. Author of the plugin
+msgid "LearnDash"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:26
+msgid "LearnDash Course Grid Settings"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:93
+msgid "Short Description"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:96
+msgid "Short description that will be displayed for this %s in the Course Grid."
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:110
+#: templates/cards/grid-1/layout.php:90
+msgid "Duration"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:113
+msgid "Duration for this %s."
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:126
+msgid "hour(s)"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:136
+msgid "minute(s)"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:146
+msgid "Enable Video Preview"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:149
+msgid "Select this option to use a featured video for this %s in the Course Grid. If not selected, the featured image will be used."
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:164
+msgid "Video URL or Embed Code"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:167
+msgid "Embed code of the video you want to use for this %s in the Course Grid. If you have a video file URL, you can use the following HTML tag to embed your video: %s"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:182
+msgid "Custom Button Text"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:185
+msgid "Use this field to change the default \"See More...\" button text in the Course Grid."
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:200
+msgid "Custom Ribbon Text"
+msgstr ""
+
+#: includes/admin/class-meta-boxes.php:203
+msgid "Use this field to change the default ribbon text in the Course Grid."
+msgstr ""
+
+#: includes/class-ajax.php:199
+msgid "No results found."
+msgstr ""
+
+#: includes/class-skins.php:84
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:681
+msgid "Grid"
+msgstr ""
+
+#: includes/class-skins.php:91
+msgid "Masonry"
+msgstr ""
+
+#: includes/class-skins.php:105
+msgid "List"
+msgstr ""
+
+#: includes/class-skins.php:119
+msgid "Grid 1"
+msgstr ""
+
+#: includes/class-skins.php:131
+msgid "Grid 2"
+msgstr ""
+
+#: includes/class-skins.php:144
+msgid "Grid 3"
+msgstr ""
+
+#: includes/class-skins.php:156
+msgid "List 1"
+msgstr ""
+
+#: includes/class-skins.php:170
+msgid "List 2"
+msgstr ""
+
+#: includes/class-utilities.php:421
+msgid "ID"
+msgstr ""
+
+#: includes/class-utilities.php:425
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:581
+msgid "Title"
+msgstr ""
+
+#: includes/class-utilities.php:429
+msgid "Published Date"
+msgstr ""
+
+#: includes/class-utilities.php:433
+msgid "Modified Date"
+msgstr ""
+
+#: includes/class-utilities.php:437
+msgid "Author"
+msgstr ""
+
+#: includes/class-utilities.php:441
+msgid "Menu Order"
+msgstr ""
+
+#: includes/class-utilities.php:468
+msgid "Load More Button"
+msgstr ""
+
+#: includes/class-utilities.php:472
+msgid "Infinite Scrolling"
+msgstr ""
+
+#: includes/class-utilities.php:476
+msgid "Disable"
+msgstr ""
+
+#: includes/class-utilities.php:510
+msgctxt "Duration, e.g. 1 hour 30 minutes"
+msgid "%d h %d min"
+msgstr ""
+
+#: includes/functions.php:270
+#: includes/functions.php:289
+#: includes/functions.php:335
+#: includes/functions.php:349
+#: includes/functions.php:386
+msgid "Free"
+msgstr ""
+
+#: includes/functions.php:327
+#: includes/functions.php:343
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:376
+msgid "Enrolled"
+msgstr ""
+
+#: includes/functions.php:330
+#: includes/functions.php:346
+#: includes/functions.php:377
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:382
+msgid "Completed"
+msgstr ""
+
+#: includes/functions.php:338
+msgid "Available"
+msgstr ""
+
+#: includes/functions.php:380
+msgid "Not started"
+msgstr ""
+
+#: includes/functions.php:383
+msgid "In progress"
+msgstr ""
+
+#: includes/functions.php:398
+msgid "Enroll Now"
+msgstr ""
+
+#: includes/functions.php:400
+msgid "Continue Study"
+msgstr ""
+
+#: includes/functions.php:402
+msgid "See More"
+msgstr ""
+
+#: includes/shortcodes/class-learndash-course-grid-filter.php:70
+msgid "Missing course_grid_id attribute."
+msgstr ""
+
+#: includes/shortcodes/class-learndash-course-grid.php:174
+msgid "The LearnDash course grid element below does not have an `id` attribute set in the shortcode so it is generated randomly each time it renders. Please set the `id` attribute in the shortcode so it will be consistent each time it renders. If it is not consistent, custom CSS rules in the site that uses the element particular ID may not work."
+msgstr ""
+
+#: includes/shortcodes/class-learndash-course-grid.php:184
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:49
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:654
+msgid "Filter"
+msgstr ""
+
+#: templates/cards/grid-1/layout.php:47
+#: templates/cards/grid-3/layout.php:42
+#: templates/cards/list-1/layout.php:45
+msgctxt "By author name"
+msgid "By %s"
+msgstr ""
+
+#: templates/cards/grid-1/layout.php:58
+msgid "Review %s"
+msgstr ""
+
+#: templates/cards/grid-1/layout.php:103
+msgid "Total Students"
+msgstr ""
+
+#: templates/cards/grid-1/layout.php:116
+msgid "Total Lessons"
+msgstr ""
+
+#: templates/cards/grid-1/layout.php:129
+msgid "Total Quizzes"
+msgstr ""
+
+#: templates/cards/grid-2/layout.php:42
+msgid "Duration: %s"
+msgstr ""
+
+#: templates/cards/grid-2/layout.php:45
+msgid "%d Lessons"
+msgstr ""
+
+#: templates/cards/grid-3/layout.php:61
+msgctxt "Price X for X duration"
+msgid "%s for %s then"
+msgstr ""
+
+#: templates/cards/grid-3/layout.php:63
+#: templates/filter/layout.php:62
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:89
+msgid "Price"
+msgstr ""
+
+#: templates/cards/list-1/layout.php:62
+#: templates/cards/list-2/layout.php:79
+msgctxt "Total students"
+msgid "%s Student"
+msgid_plural "%s Students"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/cards/list-1/layout.php:74
+#: templates/cards/list-2/layout.php:73
+msgctxt "Total lessons"
+msgid "%s Lesson"
+msgid_plural "%s Lessons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/cards/list-1/layout.php:80
+msgctxt "Total forums"
+msgid "%s Forum"
+msgid_plural "%s Forums"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/cards/list-1/layout.php:86
+msgctxt "Total quizzes"
+msgid "%s Quiz"
+msgid_plural "%s Quizzes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/filter/layout.php:10
+msgid "Keyword"
+msgstr ""
+
+#: templates/filter/layout.php:69
+msgctxt "Minimum"
+msgid "Min"
+msgstr ""
+
+#: templates/filter/layout.php:73
+msgctxt "Maximum"
+msgid "Max"
+msgstr ""
+
+#: templates/filter/layout.php:81
+msgid "Apply"
+msgstr ""
+
+#: templates/filter/layout.php:82
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/color-palette.js:48
+msgid "Clear"
+msgstr ""
+
+#: templates/pagination/button.php:2
+msgid "Load More"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:54
+msgid "Course Grid ID"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:55
+msgid "Course grid ID the filter is for."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:62
+msgid "Search"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:75
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:500
+msgid "Taxonomies"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:76
+msgid "Hold ctrl on Windows or cmd on Mac to select multiple values."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:101
+msgid "Price Min"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/components/filter-panel-body.js:114
+msgid "Price Max"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:36
+msgid "LearnDash Course Grid"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:370
+msgid "Ascending"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:371
+msgid "Descending"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:375
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:381
+msgid "All"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:377
+msgid "Not Enrolled"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:383
+msgid "In Progress"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:384
+msgid "Not Started"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:398
+msgid "Template"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:405
+msgid "Skin"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:420
+msgid "Card"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:431
+msgid "Columns"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:440
+msgid "Min Column Width (in pixel)"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:443
+msgid "If column width reach value lower than this, the grid columns number will automatically be adjusted on display."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:449
+msgid "Items Per Row"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:450
+msgid "Number of items per row. Certain skins use this to customize the design."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:458
+msgid "Query"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:465
+msgid "Post Type"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:472
+msgid "Posts per page"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:473
+msgid "Enter 0 show all items."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:483
+msgid "Order By"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:493
+msgid "Order"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:501
+msgid "Format:"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:512
+msgid "Enrollment Status"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:526
+msgid "Progress Status"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:535
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:756
+msgid "Elements"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:541
+msgid "Thumbnail"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:552
+msgid "Thumbnail Size"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:562
+msgid "Ribbon"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:571
+msgid "Content"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:572
+msgid "Content includes elements in the area outside of the thumbnail."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:591
+msgid "Clickable Title"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:600
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:726
+msgid "Description"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:610
+msgid "Max Description Character Count"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:621
+msgid "Meta"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:630
+msgid "Button"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:637
+msgid "Progress Bar"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:638
+msgid "Available for LearnDash course and group."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:647
+msgid "Pagination"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:676
+msgid "Styles"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:683
+msgid "Equal Grid Height"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:693
+msgid "Heading"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:695
+msgid "Heading Font Family"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:701
+msgid "Heading Font Size"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:702
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:735
+msgid "Accepts full format, e.g. 18px, 2rem"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:710
+msgid "Heading Font Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:717
+msgid "Heading Background Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:728
+msgid "Description Font Family"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:734
+msgid "Description Font Size"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:743
+msgid "Description Font Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:750
+msgid "Description Background Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:763
+msgid "Ribbon Font Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:770
+msgid "Ribbon Background Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:782
+msgid "Icon Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:789
+msgid "Icon Background Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:801
+msgid "Button Font Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:808
+msgid "Button Background Color"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid-filter/index.js:94
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:816
+msgid "Preview"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid-filter/index.js:98
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:820
+msgid "Show Preview"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:832
+msgid "Unique ID for CSS styling purpose."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid/index.js:851
+msgid "[learndash_course_grid] shortcode output shown here"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid-filter/index.js:21
+msgid "LearnDash Course Grid Filter"
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid-filter/index.js:22
+msgid "LearnDash course grid filter widget."
+msgstr ""
+
+#: includes/gutenberg/assets/js/index.js:1
+#: includes/gutenberg/blocks/learndash-course-grid-filter/index.js:123
+msgid "[learndash_course_grid_filter] shortcode output shown here"
+msgstr ""
