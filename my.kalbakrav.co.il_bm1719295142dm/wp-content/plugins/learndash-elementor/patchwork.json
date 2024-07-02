@@ -1,8 +1,0 @@
-{
-  "redefinable-internals": [
-    "file_exists",
-    "filesize",
-    "time",
-    "file_get_contents"
-  ]
-}
