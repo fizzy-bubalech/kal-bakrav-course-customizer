@@ -9,44 +9,69 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+
+use CourseCustomizer\ASTCC_Quiz_Handler;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Exception;
 
 class ASTCC_Expression_Evaluator{
+    private $quiz_handler;
+
+    public function __construct(ASTCC_Quiz_Handler $quiz_handler = null) {
+        $this->quiz_handler = $quiz_handler ?? new ASTCC_Quiz_Handler();
+    }
 
     public function eval_on_page_expressions($content) {
         return preg_replace_callback('/%%\s*(.*?)\s*%%/', [$this,'process_expression'], $content);
     }
     
     public function process_expression($matches) {
+        $allowed_functions = [
+            'handle_most_recent_quiz_completion' => $this->quiz_handler->handle_most_recent_quiz_completion()
+        ];
         $expression = trim($matches[1]);
+        $decoded_expression = html_entity_decode($expression, ENT_QUOTES, 'UTF-8');
         
-        if ($this->has_function_call($expression)) {
-            return $this->handle_function_call($expression);
+        if ($this->has_function_call($decoded_expression,$allowed_functions)) {
+            return $this->handle_function_call($decoded_expression,$allowed_functions);
+        }
+
+        try {
+
+            $variables = $this->extract_variables($decoded_expression);
+            $variable_values = $this->fetch_variables_from_db($variables);
+            $result = $this->evaluate_expression($decoded_expression, $variable_values);
+        return $this->format_result($result);
+        } catch (SyntaxError $e) {
+            return 'Error: Invalid expression';
+        } catch (Exception $e) {
+            return 'Error: ' . $e->getMessage();
         }
         
-        $variables = $this->extract_variables($expression);
-        $variable_values = $this->fetch_variables_from_db($variables);
-        $result = $this->evaluate_expression($expression, $variable_values);
-        return $this->format_result($result);
+        
     }
     
-    public function has_function_call($expression) {
-        $allowed_functions = ['custom_func1', 'custom_func2']; // Add your custom functions here
-        foreach ($allowed_functions as $func) {
-            if (strpos($expression, $func . '(') !== false) {
+    public function has_function_call($expression,$allowed_functions) {
+
+        foreach ($allowed_functions as $func_name => $func_call) {
+            if (strpos($expression, $func_name ) !== false) {
                 return true;
             }
         }
         return false;
     }
-    
-    public function handle_function_call($expression) {
-        // This is a simplified example. You'll need to implement proper parsing and security measures.
-        $result = eval("return $expression;");
-        return $result;
+    function handle_function_call($input_string, $function_array) {
+        foreach ($function_array as $func_name => $func_call) {
+            if (strpos($input_string, $func_name) !== false) {
+                // Function name found in string, execute the function
+                return $func_call;
+            }
+        }
+        // No matching function found
+        return null;
     }
+    
     
     public function extract_variables($expression) {
         $expressionLanguage = new ExpressionLanguage();

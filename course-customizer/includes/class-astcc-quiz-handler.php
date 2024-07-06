@@ -68,7 +68,7 @@ class ASTCC_Quiz_Handler{
         // Get user's answer from the statistic data and convert to int 
         $user_answer = intval($this->get_user_answer_from_statistics($statistic_ref_id, $question_post_id));
 
-        $is_valid_result = $this->utilities->validate_quiz_answers($user_answer, false); //CHANGE FALSE TO  $is_time FROM EXERCISE TABLE.
+        $is_valid_result = $this->utilities->validate_quiz_answers($user_answer, false); //CHANGE FALSE TO  $is_time FROM EXERCISE TABLE. TODO
 
         // Set the timezone to Jerusalem
         $timezone = new DateTimeZone('Asia/Jerusalem');
@@ -90,36 +90,64 @@ class ASTCC_Quiz_Handler{
         
     }
 
-    public function remove_invalid_quiz_answers($quiz_data, $user = null) {
+    public function handle_most_recent_quiz_completion()
+    {
+        global $wpdb;
+        $current_user_id = get_current_user_id();
+
+        // Get the most recent statistic_ref_id for the current user
+        $statistic_ref_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT statistic_ref_id 
+                FROM {$wpdb->prefix}learndash_pro_quiz_statistic_ref 
+                WHERE user_id = %d 
+                ORDER BY create_time DESC 
+                LIMIT 1",
+                $current_user_id
+            )
+        );
+
+        if (!$statistic_ref_id) {
+            return "No recent quiz completion found for the current user.";
+        }
+
+        $invalid_answers = $this->check_for_invalid_answers($statistic_ref_id);
+        if ($invalid_answers > 0) {
+            $this->remove_invalid_quiz_answers($statistic_ref_id);
+            return "Metric Assessment completed successfully. All entries were found valid and recorded by the system.";
+        } 
+        return "Metric Assessment completed un-successfully. Some entries were invalid, none recorded. Please retake the assessment.";
+    }
+
+
+    public function check_for_invalid_answers($statistic_ref_id){
         global $wpdb;
         $table_name = $wpdb->prefix . 'learndash_pro_quiz_statistic';
-        $statistic_ref_id = $quiz_data['statistic_ref_id'];
+
     
         // Check for invalid answers
         $invalid_answers = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE statistic_ref_id = %d AND answer_data = 'invalid'",
-            $statistic_ref_id
-        ));
-    
+            "SELECT COUNT(*) FROM $table_name WHERE statistic_ref_id = %d AND answer_data = 'invalid'", $statistic_ref_id));
         error_log("Checking quiz with statistic_ref_id: $statistic_ref_id. Invalid answers found: $invalid_answers");
-    
-        if ($invalid_answers > 0) {
-            // Delete all entries for this quiz
-            error_log("DELETING ITEMS of statistic_ref_id: $statistic_ref_id WITH invalid_answers: $invalid_answers");
-            $wpdb->delete(
-                $table_name,
-                array('statistic_ref_id' => $statistic_ref_id),
-                array('%d')
-            );
-            $wpdb->delete(
-                $wpdb->prefix . 'learndash_pro_quiz_statistic_ref',
-                array('statistic_ref_id' => $statistic_ref_id),
-                array('%d')
-            );
-    
-            
-            }
+        return $invalid_answers;
+        
+
     }
+
+    public function remove_invalid_quiz_answers($statistic_ref_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'learndash_pro_quiz_statistic';
+        $wpdb->delete(
+            $table_name,
+            array('statistic_ref_id' => $statistic_ref_id),
+            array('%d')
+        );
+        $wpdb->delete(
+            $wpdb->prefix . 'learndash_pro_quiz_statistic_ref',
+            array('statistic_ref_id' => $statistic_ref_id),
+            array('%d')
+        );
+       }
 
 
 
