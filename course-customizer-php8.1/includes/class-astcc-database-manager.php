@@ -116,31 +116,24 @@ class ASTCC_Database_Manager
     public function insert_results_into_wp_results_table($results)
     {
         $table_name = $this->wpdb->prefix . "results";
+        $success = true;
 
         foreach ($results as $item) {
-            $this->wpdb->insert(
-                $table_name,
-                [
-                    "user_id" => $item["user_id"],
-                    "exercise_id" => $item["exercise_id"],
-                    "result" => $item["result"],
-                    "result_date" => $item["result_date"],
-                    "is_metric" => $item["is_metric"],
-                ],
-                [
-                    "%d", // user_id
-                    "%d", // exercise_id
-                    "%d", // result
-                    "%s", // result_date
-                    "%d", // is_metric
-                ]
+            $inserted = $this->add_result(
+                $item["user_id"],
+                $item["exercise_id"],
+                $item["result"],
+                $item["result_date"],
+                $item["is_metric"]
             );
 
-            if ($this->wpdb->last_error) {
-                // Handle error
+            if (!$inserted) {
+                $success = false;
                 error_log("Database insert error: " . $this->wpdb->last_error);
             }
         }
+
+        return $success;
     }
     public function update_quiz_statistic_answer_data_invalid(
         $statistic_ref_id,
@@ -182,6 +175,18 @@ class ASTCC_Database_Manager
         if ($this->wpdb->last_error) {
             error_log("Database insert error: " . $this->wpdb->last_error);
         }
+    }
+
+    public function get_question_from_id($question_id)
+    {
+        $question = $this->wpdb->get_row(
+            $this->wpdb->prepare(
+                "SELECT * FROM {$this->wpdb->prefix}learndash_pro_quiz_question WHERE id = %d",
+                $question_id
+            ),
+            ARRAY_A
+        );
+        return $question;
     }
 
     public function get_all_exercises()
@@ -282,10 +287,8 @@ class ASTCC_Database_Manager
     public function get_all_users()
     {
         return $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "SELECT ID, display_name FROM {$this->wpdb->prefix}users",
-                ARRAY_A
-            )
+            "SELECT ID, display_name FROM {$this->wpdb->prefix}users",
+            ARRAY_A
         );
     }
     public function check_for_invalid_answers($statistic_ref_id)

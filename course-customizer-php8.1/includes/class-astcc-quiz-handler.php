@@ -18,6 +18,7 @@ class ASTCC_Quiz_Handler
     private ASTCC_Database_Manager $database_manager;
     private array $exercise_cache = [];
     private array $post_cache = [];
+    private array $question_cache = [];
 
     public function __construct(
         ASTCC_Utilities $utilities = null,
@@ -166,6 +167,49 @@ class ASTCC_Quiz_Handler
         return $exercise["is_time"];
     }
 
+    public function is_time_question_from_question_id($question_id)
+    {
+        $exercise = $this->exercise_from_question_id($question_id);
+        return $exercise["is_time"];
+    }
+
+    public function exercise_from_question_id($question_id)
+    {
+        if (!isset($this->exercise_cache[$question_id])) {
+            $question = $this->get_question($question_id);
+            // Add a null check here
+            if ($question === null) {
+                return null; // or handle this case appropriately
+            }
+            $question_text = $question["question"];
+            $match = preg_match_all(
+                "/%%\s*(.*?)\s*%%/",
+                $question_text,
+                $matches
+            );
+            if ($match && !empty($matches[1])) {
+                $expression = trim($matches[1][0]);
+                $decoded_expression = html_entity_decode(
+                    $expression,
+                    ENT_QUOTES,
+                    "UTF-8"
+                );
+                $variable = $this->expression_evaluator->extract_variables(
+                    $decoded_expression
+                );
+                if (!empty($variable)) {
+                    $variable = preg_replace('/_dbtype$/', "", $variable[0]);
+                    $this->exercise_cache[
+                        $question_id
+                    ] = $this->database_manager->get_exercise_by_name(
+                        $variable
+                    );
+                }
+            }
+        }
+        return $this->exercise_cache[$question_id] ?? null;
+    }
+
     public function exercise_from_question_post($question_post_id)
     {
         if (!isset($this->exercise_cache[$question_post_id])) {
@@ -190,6 +234,15 @@ class ASTCC_Quiz_Handler
             );
         }
         return $this->post_cache[$post_id];
+    }
+    private function get_question($question_id)
+    {
+        if (!isset($this->question_cache[$question_id])) {
+            $this->question_cache[
+                $question_id
+            ] = $this->database_manager->get_question_from_id($question_id);
+        }
+        return $this->question_cache[$question_id];
     }
 
     private function get_all_user_answers_from_statistics($statistic_ref_id)

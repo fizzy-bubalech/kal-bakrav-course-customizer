@@ -38,20 +38,37 @@ class ASTCC_Utilities
     }
     function validate_quiz_answers($result_data, $is_time)
     {
-        $is_valid = true;
-
         // Remove any extra backslashes and quotes
         $result_data = stripslashes(trim($result_data, '"'));
 
+        error_log(
+            "Validating answer: " .
+                $result_data .
+                ", is_time: " .
+                ($is_time ? "true" : "false")
+        );
+
         if (!$is_time) {
-            $result_data = intval($result_data);
-            $is_valid = $result_data >= 1 && $result_data <= 9999;
-            error_log("is_time = $is_time, result_data : $result_data");
+            // For non-time answers, check if it's a valid integer between 1 and 9999
+            if (!preg_match('/^\d+$/', $result_data)) {
+                error_log("Invalid non-time answer: not a valid integer");
+                return false;
+            }
+            $result_int = intval($result_data);
+            $is_valid = $result_int >= 1 && $result_int <= 9999;
+            error_log(
+                "Non-time answer validation result: " .
+                    ($is_valid ? "valid" : "invalid")
+            );
         } else {
-            error_log("is_time = $is_time, result_data : $result_data");
+            // For time answers, check if it's in the format MM:SS or HH:MM:SS
             $is_valid = preg_match(
-                '/^([0-5][0-9]):([0-5][0-9])$/',
+                '/^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/',
                 $result_data
+            );
+            error_log(
+                "Time answer validation result: " .
+                    ($is_valid ? "valid" : "invalid")
             );
         }
 
@@ -69,20 +86,20 @@ class ASTCC_Utilities
     {
         $parts = explode(":", $time_string);
         $seconds = 0;
-        error_log(print_r($parts, true));
+        error_log("Converting time to seconds: " . $time_string);
 
         if (count($parts) == 3) {
-            // Format is H:i:s
+            // Format is HH:MM:SS
             $seconds = $parts[0] * 3600 + $parts[1] * 60 + $parts[2];
         } elseif (count($parts) == 2) {
-            // Format is i:s
+            // Format is MM:SS
             $seconds = $parts[0] * 60 + $parts[1];
-        } elseif (count($parts) == 1) {
-            $seconds = $parts[0];
         } else {
+            error_log("Invalid time format: " . $time_string);
             return false;
         }
 
+        error_log("Converted to seconds: " . $seconds);
         return $seconds;
     }
 

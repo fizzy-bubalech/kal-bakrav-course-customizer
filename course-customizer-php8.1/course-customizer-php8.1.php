@@ -2,10 +2,10 @@
 /*
 Plugin Name: Course Customizer
 Description: Adds custom database tables for storing additional data and custom filters to inject user result data into courses.
-Version: 0.1.4
+Version: 0.1.5
 Author: AST
 */
-define("COURSE_CUSTOMIZER_VERSION", "0.1.4");
+define("COURSE_CUSTOMIZER_VERSION", "0.1.5");
 
 // Display an admin notice when the plugin is activated
 
@@ -68,12 +68,14 @@ class Course_Customizer
 
         add_action("admin_notices", [$this, "activation_notice"]);
         // add_action('plugins_loaded', [$this->database_manager, 'check_database_info']);
-        add_action(
+        /*add_action(
             "learndash_quiz_submitted",
             [$this->quiz_handler, "handle_quiz_submission"],
             10,
             2
         );
+        */
+
         /*
         add_filter(
             "the_content",
@@ -105,18 +107,23 @@ class Course_Customizer
             $this,
             "ajax_validate_quiz_answers",
         ]);
+        add_action("wp_ajax_save_quiz_results", [$this, "save_quiz_results"]);
+        add_action("wp_ajax_nopriv_save_quiz_results", [
+            $this,
+            "save_quiz_results",
+        ]);
     }
 
     public function enqueue_answer_checker_script()
     {
         wp_enqueue_script(
-            "answer-checker",
-            plugin_dir_url(__FILE__) . "js/answer-checker.js",
+            "answer-checker-and-save",
+            plugin_dir_url(__FILE__) . "js/answer-checker-and-save.js",
             ["jquery"],
             time(),
             true
         );
-        wp_localize_script("answer-checker", "myAjax", [
+        wp_localize_script("answer-checker-and-save", "myAjax", [
             "ajaxurl" => admin_url("admin-ajax.php"),
         ]);
     }
@@ -128,29 +135,97 @@ class Course_Customizer
 
     public function ajax_validate_quiz_answers()
     {
-        if (
-            !isset($_POST["userAnswer"]) ||
-            !isset($_POST["post_question_id"])
-        ) {
+        error_log("Validating the answer");
+        if (!isset($_POST["userAnswer"]) || !isset($_POST["question_id"])) {
+            error_log("Missing required parameters");
             wp_send_json_error(["message" => "Missing required parameters"]);
             wp_die();
         }
 
         $user_answer = sanitize_text_field($_POST["userAnswer"]);
-        $question_post_id = intval($_POST["post_question_id"]);
+        $question_id = intval($_POST["question_id"]);
 
-        if (!$question_post_id) {
+        if (!$question_id) {
+            error_log("Invalid question ID");
             wp_send_json_error(["message" => "Invalid question ID"]);
             wp_die();
         }
 
-        $is_time = $this->quiz_handler->is_time_question($question_post_id);
+        $is_time = $this->quiz_handler->is_time_question_from_question_id(
+            $question_id
+        );
         $is_valid = $this->utilities->validate_quiz_answers(
             $user_answer,
             $is_time
         );
 
         wp_send_json_success(["is_valid" => $is_valid]);
+        wp_die();
+    }
+
+    public function save_quiz_results()
+    {
+        // Ensure no output has been sent before this point
+        if (headers_sent()) {
+            wp_send_json_error("Headers already sent");
+            return;
+        }
+
+        if (!isset($_POST["quizData"])) {
+            wp_send_json_error("No quiz data received");
+            return;
+        }
+
+        $quiz_data = json_decode(stripslashes($_POST["quizData"]), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error("Invalid JSON data received");
+            return;
+        }
+
+        $results = [];
+        $user_id = get_current_user_id();
+
+        foreach ($quiz_data as $question) {
+            $exercise = $this->quiz_handler->exercise_from_question_id(
+                $question["questionId"]
+            );
+            if ($exercise === null) {
+                wp_send_json_error(
+                    "Invalid question ID: " . $question["questionId"]
+                );
+                return;
+            }
+
+            $exercise_id = $exercise["exercise_id"];
+            $user_answer = $question["userAnswer"];
+            $current_time = $this->utilities->current_date_time();
+            $is_time = $exercise["is_time"];
+
+            $result_value = $is_time
+                ? $this->utilities->time_to_seconds($user_answer)
+                : intval($user_answer);
+
+            $results[] = [
+                "user_id" => $user_id,
+                "exercise_id" => $exercise_id,
+                "result" => $result_value,
+                "is_metric" => 1,
+                "result_date" => $current_time,
+            ];
+        }
+
+        $insert_result = $this->database_manager->insert_results_into_wp_results_table(
+            $results
+        );
+
+        if ($insert_result === false) {
+            wp_send_json_error("Error saving quiz results");
+        } else {
+            wp_send_json_success("Quiz results saved successfully");
+        }
+
+        // Ensure we exit after sending the JSON response
         wp_die();
     }
 }

@@ -36,6 +36,34 @@ class ASTCC_Expression_Evaluator
             $content
         );
     }
+    public function proeccss_dbtype_expression($text)
+    {
+        $match = preg_match_all("/%%\s*(.*?)\s*%%/", $text);
+        $expression = trim($match[1]);
+        $decoded_expression = html_entity_decode(
+            $expression,
+            ENT_QUOTES,
+            "UTF-8"
+        );
+        try {
+            $variables = $this->extract_variables($decoded_expression);
+
+            if ($this->is_dbtype_variable($variables) === false) {
+                return null;
+            }
+
+            $variables[0] = str_replace("_dbtype", "", $variables[0]);
+
+            $variables_and_values = $this->fetch_variables_from_db($variables);
+
+            return $this->has_time_based_exercise($variables_and_values);
+        } catch (SyntaxError $e) {
+            return null;
+        } catch (Exception $e) {
+            return null;
+        }
+        return null;
+    }
 
     public function process_expression($match)
     {
