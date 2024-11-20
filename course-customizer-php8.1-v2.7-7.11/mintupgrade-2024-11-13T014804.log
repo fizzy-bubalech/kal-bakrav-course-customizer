@@ -1,0 +1,243 @@
+
+Running check 'Phase 1: Preparation'
+=================
+APT Repositories:
+=================
+Repos:
+  No active apt repos in: /etc/apt/sources.list
+  Active apt repos in: /etc/apt/sources.list.d/brave-browser-release.list
+    1: deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
+  Active apt repos in: /etc/apt/sources.list.d/docker.list
+    1: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable
+  Active apt repos in: /etc/apt/sources.list.d/i2p-maintainers-i2p-jammy.list
+    1: deb [signed-by=/etc/apt/keyrings/i2p-maintainers-i2p-jammy.gpg] https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy main
+  Active apt repos in: /etc/apt/sources.list.d/inkscape_dev-stable-jammy.list
+    1: deb [signed-by=/etc/apt/keyrings/inkscape_dev-stable-jammy.gpg] https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy main
+  Active apt repos in: /etc/apt/sources.list.d/obsproject-obs-studio-jammy.list
+    1: deb [signed-by=/etc/apt/keyrings/obsproject-obs-studio-jammy.gpg] https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy main
+  Active apt repos in: /etc/apt/sources.list.d/official-package-repositories.list
+    1: deb http://packages.linuxmint.com virginia main upstream import backport
+    2: deb http://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
+    3: deb http://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
+    4: deb http://archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse
+    5: deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse
+  Active apt repos in: /etc/apt/sources.list.d/phoerious-keepassxc-jammy.list
+    1: deb [signed-by=/etc/apt/keyrings/phoerious-keepassxc-jammy.gpg] https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy main
+  Active apt repos in: /etc/apt/sources.list.d/shiftkey-packages.list
+    1: deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main
+  Active apt repos in: /etc/apt/sources.list.d/spotify.list
+    1: deb http://repository.spotify.com stable non-free
+  Active apt repos in: /etc/apt/sources.list.d/vscode.list
+    1: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/repos/code stable main
+=================
+
+Running check 'Linux Mint version'
+Check succeeded:  Linux Mint version
+
+Running check 'Power source'
+Check succeeded:  Power source
+
+Running check 'APT cache'
+rm -rf /var/lib/apt/lists/*
+DEBIAN_PRIORITY=critical apt-get update
+Get:1 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+Get:2 https://brave-browser-apt-release.s3.brave.com stable InRelease [7546 B]
+Get:3 https://download.docker.com/linux/ubuntu jammy InRelease [48.8 kB]
+Ign:4 http://packages.linuxmint.com virginia InRelease
+Get:5 http://repository.spotify.com stable InRelease [3316 B]
+Get:6 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Ign:7 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+Get:8 https://packages.microsoft.com/repos/code stable InRelease [3590 B]
+Get:9 http://packages.linuxmint.com virginia Release [24.1 kB]
+Get:10 https://brave-browser-apt-release.s3.brave.com stable/main amd64 Packages [17.1 kB]
+Get:11 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages [40.7 kB]
+Get:12 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy InRelease [18.3 kB]
+Get:13 http://repository.spotify.com stable/non-free i386 Packages [1171 B]
+Get:14 https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy InRelease [18.3 kB]
+Get:15 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:16 http://repository.spotify.com stable/non-free amd64 Packages [1651 B]
+Get:17 https://packages.microsoft.com/repos/code stable/main amd64 Packages [18.5 kB]
+Get:18 http://packages.linuxmint.com virginia Release.gpg [833 B]
+Get:19 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy InRelease [18.1 kB]
+Get:20 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:21 https://packages.microsoft.com/repos/code stable/main armhf Packages [18.6 kB]
+Get:22 https://packages.microsoft.com/repos/code stable/main arm64 Packages [18.5 kB]
+Get:23 https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy InRelease [18.1 kB]
+Get:24 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages [1395 kB]
+Get:25 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy/main amd64 Packages [1284 B]
+Get:26 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy/main i386 Packages [1112 B]
+Get:27 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy/main Translation-en [788 B]
+Get:28 https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy/main amd64 Packages [1168 B]
+Get:29 https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy/main Translation-en [692 B]
+Get:30 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy/main amd64 Packages [1128 B]
+Get:31 http://packages.linuxmint.com virginia/main amd64 Packages [18.5 kB]
+Ign:7 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+Get:32 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy/main Translation-en [160 B]
+Get:33 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [1932 kB]
+Get:34 http://archive.ubuntu.com/ubuntu jammy/main i386 Packages [1040 kB]
+Get:35 http://packages.linuxmint.com virginia/main i386 Packages [17.9 kB]
+Get:36 http://packages.linuxmint.com virginia/upstream amd64 Packages [48.8 kB]
+Get:37 https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy/main amd64 Packages [740 B]
+Get:38 https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy/main Translation-en [332 B]
+Get:39 http://packages.linuxmint.com virginia/upstream i386 Packages [14.6 kB]
+Get:40 http://packages.linuxmint.com virginia/import amd64 Packages [8341 B]
+Get:41 http://packages.linuxmint.com virginia/import i386 Packages [3678 B]
+Get:42 http://packages.linuxmint.com virginia/backport amd64 Packages [54.9 kB]
+Get:43 http://archive.ubuntu.com/ubuntu jammy/main Translation-en [510 kB]
+Get:44 http://archive.ubuntu.com/ubuntu jammy/main amd64 DEP-11 Metadata [423 kB]
+Get:45 http://archive.ubuntu.com/ubuntu jammy/main amd64 c-n-f Metadata [30.3 kB]
+Get:46 http://packages.linuxmint.com virginia/backport i386 Packages [8307 B]
+Get:47 http://archive.ubuntu.com/ubuntu jammy/restricted i386 Packages [30.4 kB]
+Get:48 http://archive.ubuntu.com/ubuntu jammy/restricted amd64 Packages [129 kB]
+Get:49 http://archive.ubuntu.com/ubuntu jammy/restricted Translation-en [18.6 kB]
+Get:50 http://archive.ubuntu.com/ubuntu jammy/restricted amd64 c-n-f Metadata [488 B]
+Get:51 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [14.1 MB]
+Ign:7 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+Get:52 http://security.ubuntu.com/ubuntu jammy-security/main i386 Packages [562 kB]
+Get:53 http://security.ubuntu.com/ubuntu jammy-security/main Translation-en [309 kB]
+Get:54 http://security.ubuntu.com/ubuntu jammy-security/main amd64 DEP-11 Metadata [43.1 kB]
+Get:55 http://security.ubuntu.com/ubuntu jammy-security/main amd64 c-n-f Metadata [13.3 kB]
+Get:56 http://security.ubuntu.com/ubuntu jammy-security/restricted i386 Packages [38.2 kB]
+Get:57 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [2573 kB]
+Get:58 http://security.ubuntu.com/ubuntu jammy-security/restricted Translation-en [444 kB]
+Get:59 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 DEP-11 Metadata [208 B]
+Get:60 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 c-n-f Metadata [580 B]
+Get:61 http://security.ubuntu.com/ubuntu jammy-security/universe i386 Packages [634 kB]
+Get:62 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [913 kB]
+Get:63 http://security.ubuntu.com/ubuntu jammy-security/universe Translation-en [181 kB]
+Get:64 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 DEP-11 Metadata [126 kB]
+Get:65 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 c-n-f Metadata [19.5 kB]
+Get:66 http://security.ubuntu.com/ubuntu jammy-security/multiverse i386 Packages [1356 B]
+Get:67 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 Packages [37.2 kB]
+Get:68 http://security.ubuntu.com/ubuntu jammy-security/multiverse Translation-en [7588 B]
+Get:69 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 DEP-11 Metadata [208 B]
+Get:70 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 c-n-f Metadata [224 B]
+Err:7 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+  Certificate verification failed: The certificate is NOT trusted. The name in the certificate does not match the expected.  Could not handshake: Error in the certificate verification. [IP: 13.107.246.62 443]
+Get:71 http://archive.ubuntu.com/ubuntu jammy/universe i386 Packages [7474 kB]
+Get:72 http://archive.ubuntu.com/ubuntu jammy/universe Translation-en [5652 kB]
+Get:73 http://archive.ubuntu.com/ubuntu jammy/universe amd64 DEP-11 Metadata [3559 kB]
+Get:74 http://archive.ubuntu.com/ubuntu jammy/universe amd64 c-n-f Metadata [286 kB]
+Get:75 http://archive.ubuntu.com/ubuntu jammy/multiverse i386 Packages [112 kB]
+Get:76 http://archive.ubuntu.com/ubuntu jammy/multiverse amd64 Packages [217 kB]
+Get:77 http://archive.ubuntu.com/ubuntu jammy/multiverse Translation-en [112 kB]
+Get:78 http://archive.ubuntu.com/ubuntu jammy/multiverse amd64 DEP-11 Metadata [42.1 kB]
+Get:79 http://archive.ubuntu.com/ubuntu jammy/multiverse amd64 c-n-f Metadata [8372 B]
+Get:80 http://archive.ubuntu.com/ubuntu jammy-updates/main i386 Packages [720 kB]
+Get:81 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [2149 kB]
+Get:82 http://archive.ubuntu.com/ubuntu jammy-updates/main Translation-en [367 kB]
+Get:83 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 DEP-11 Metadata [103 kB]
+Get:84 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 c-n-f Metadata [17.9 kB]
+Get:85 http://archive.ubuntu.com/ubuntu jammy-updates/restricted i386 Packages [39.8 kB]
+Get:86 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 Packages [2633 kB]
+Get:87 http://archive.ubuntu.com/ubuntu jammy-updates/restricted Translation-en [455 kB]
+Get:88 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 DEP-11 Metadata [212 B]
+Get:89 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 c-n-f Metadata [612 B]
+Get:90 http://archive.ubuntu.com/ubuntu jammy-updates/universe i386 Packages [738 kB]
+Get:91 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1134 kB]
+Get:92 http://archive.ubuntu.com/ubuntu jammy-updates/universe Translation-en [265 kB]
+Get:93 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 DEP-11 Metadata [356 kB]
+Get:94 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 c-n-f Metadata [26.4 kB]
+Get:95 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 Packages [43.3 kB]
+Get:96 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse i386 Packages [4752 B]
+Get:97 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse Translation-en [10.8 kB]
+Get:98 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 DEP-11 Metadata [940 B]
+Get:99 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 c-n-f Metadata [440 B]
+Get:100 http://archive.ubuntu.com/ubuntu jammy-backports/main i386 Packages [59.9 kB]
+Get:101 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 Packages [67.7 kB]
+Get:102 http://archive.ubuntu.com/ubuntu jammy-backports/main Translation-en [11.1 kB]
+Get:103 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 DEP-11 Metadata [5316 B]
+Get:104 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 c-n-f Metadata [388 B]
+Get:105 http://archive.ubuntu.com/ubuntu jammy-backports/restricted amd64 DEP-11 Metadata [212 B]
+Get:106 http://archive.ubuntu.com/ubuntu jammy-backports/restricted amd64 c-n-f Metadata [116 B]
+Get:107 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 Packages [28.8 kB]
+Get:108 http://archive.ubuntu.com/ubuntu jammy-backports/universe i386 Packages [17.3 kB]
+Get:109 http://archive.ubuntu.com/ubuntu jammy-backports/universe Translation-en [16.5 kB]
+Get:110 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 DEP-11 Metadata [23.1 kB]
+Get:111 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 c-n-f Metadata [672 B]
+Get:112 http://archive.ubuntu.com/ubuntu jammy-backports/multiverse amd64 DEP-11 Metadata [212 B]
+Get:113 http://archive.ubuntu.com/ubuntu jammy-backports/multiverse amd64 c-n-f Metadata [116 B]
+Fetched 53.4 MB in 21s (2503 kB/s)
+Reading package lists...
+W: Failed to fetch https://apt.packages.shiftkey.dev/ubuntu/dists/any/InRelease  Certificate verification failed: The certificate is NOT trusted. The name in the certificate does not match the expected.  Could not handshake: Error in the certificate verification. [IP: 13.107.246.62 443]
+W: Some index files failed to download. They have been ignored, or old ones used instead.
+
+Running check 'APT cache'
+rm -rf /var/lib/apt/lists/*
+DEBIAN_PRIORITY=critical apt-get update
+Get:1 http://repository.spotify.com stable InRelease [3316 B]
+Get:2 https://download.docker.com/linux/ubuntu jammy InRelease [48.8 kB]
+Get:3 https://brave-browser-apt-release.s3.brave.com stable InRelease [7546 B]
+Get:4 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+Ign:5 http://packages.linuxmint.com virginia InRelease
+Get:6 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:7 https://packages.microsoft.com/repos/code stable InRelease [3590 B]
+Get:8 https://brave-browser-apt-release.s3.brave.com stable/main amd64 Packages [17.1 kB]
+Get:9 http://repository.spotify.com stable/non-free i386 Packages [1171 B]
+Get:10 https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages [40.7 kB]
+Get:11 http://packages.linuxmint.com virginia Release [24.1 kB]
+Get:12 http://repository.spotify.com stable/non-free amd64 Packages [1651 B]
+Get:13 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy InRelease [18.3 kB]
+Get:14 https://packages.microsoft.com/repos/code stable/main arm64 Packages [18.5 kB]
+Get:15 https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy InRelease [18.3 kB]
+Get:16 http://packages.linuxmint.com virginia Release.gpg [833 B]
+Get:17 https://packages.microsoft.com/repos/code stable/main armhf Packages [18.6 kB]
+Get:18 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy InRelease [18.1 kB]
+Get:19 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:20 https://packages.microsoft.com/repos/code stable/main amd64 Packages [18.5 kB]
+Get:21 https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy InRelease [18.1 kB]
+Get:22 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy/main amd64 Packages [1284 B]
+Get:23 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy/main i386 Packages [1112 B]
+Get:24 https://ppa.launchpadcontent.net/i2p-maintainers/i2p/ubuntu jammy/main Translation-en [788 B]
+Get:25 https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy/main amd64 Packages [1168 B]
+Get:26 https://ppa.launchpadcontent.net/inkscape.dev/stable/ubuntu jammy/main Translation-en [692 B]
+Get:27 http://packages.linuxmint.com virginia/main i386 Packages [17.9 kB]
+Get:28 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:29 http://packages.linuxmint.com virginia/main amd64 Packages [18.5 kB]
+Get:30 http://packages.linuxmint.com virginia/upstream amd64 Packages [48.8 kB]
+Get:31 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy/main amd64 Packages [1128 B]
+Get:32 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [1932 kB]
+Get:33 http://archive.ubuntu.com/ubuntu jammy/main i386 Packages [1040 kB]
+Get:34 https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu jammy/main Translation-en [160 B]
+Get:35 https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy/main amd64 Packages [740 B]
+Get:36 https://ppa.launchpadcontent.net/phoerious/keepassxc/ubuntu jammy/main Translation-en [332 B]
+Get:37 http://packages.linuxmint.com virginia/upstream i386 Packages [14.6 kB]
+Get:38 http://packages.linuxmint.com virginia/import amd64 Packages [8341 B]
+Get:39 http://packages.linuxmint.com virginia/import i386 Packages [3678 B]
+Get:40 http://packages.linuxmint.com virginia/backport amd64 Packages [54.9 kB]
+Get:41 http://packages.linuxmint.com virginia/backport i386 Packages [8307 B]
+Get:42 http://security.ubuntu.com/ubuntu jammy-security/main i386 Packages [562 kB]
+Get:43 http://security.ubuntu.com/ubuntu jammy-security/main Translation-en [309 kB]
+Get:44 http://security.ubuntu.com/ubuntu jammy-security/main amd64 DEP-11 Metadata [43.1 kB]
+Get:45 http://security.ubuntu.com/ubuntu jammy-security/main amd64 c-n-f Metadata [13.3 kB]
+Get:46 http://security.ubuntu.com/ubuntu jammy-security/restricted i386 Packages [38.2 kB]
+Get:47 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [2573 kB]
+Get:48 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages [1395 kB]
+Get:49 http://security.ubuntu.com/ubuntu jammy-security/restricted Translation-en [444 kB]
+Get:50 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 DEP-11 Metadata [208 B]
+Get:51 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 c-n-f Metadata [580 B]
+Get:52 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [913 kB]
+Get:53 http://security.ubuntu.com/ubuntu jammy-security/universe i386 Packages [634 kB]
+Get:54 http://security.ubuntu.com/ubuntu jammy-security/universe Translation-en [181 kB]
+Get:55 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 DEP-11 Metadata [126 kB]
+Ign:56 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+Get:57 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 c-n-f Metadata [19.5 kB]
+Get:58 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 Packages [37.2 kB]
+Get:59 http://security.ubuntu.com/ubuntu jammy-security/multiverse i386 Packages [1356 B]
+Get:60 http://security.ubuntu.com/ubuntu jammy-security/multiverse Translation-en [7588 B]
+Get:61 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 DEP-11 Metadata [208 B]
+Get:62 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 c-n-f Metadata [224 B]
+Get:63 http://archive.ubuntu.com/ubuntu jammy/main Translation-en [510 kB]
+Ign:56 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+Get:64 http://archive.ubuntu.com/ubuntu jammy/main amd64 DEP-11 Metadata [423 kB]
+Get:65 http://archive.ubuntu.com/ubuntu jammy/main amd64 c-n-f Metadata [30.3 kB]
+Get:66 http://archive.ubuntu.com/ubuntu jammy/restricted amd64 Packages [129 kB]
+Get:67 http://archive.ubuntu.com/ubuntu jammy/restricted i386 Packages [30.4 kB]
+Get:68 http://archive.ubuntu.com/ubuntu jammy/restricted Translation-en [18.6 kB]
+Get:69 http://archive.ubuntu.com/ubuntu jammy/restricted amd64 c-n-f Metadata [488 B]
+Get:70 http://archive.ubuntu.com/ubuntu jammy/universe i386 Packages [7474 kB]
+Ign:56 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+mintupgrade-inhibit-power: no process found
+Get:71 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [14.1 MB]
+Err:56 https://apt.packages.shiftkey.dev/ubuntu any InRelease
+  Certificate verification failed: The certificate is NOT trusted. The name in the certificate does not match the expected.  Could not handshake: Error in the certificate verification. [IP: 13.107.246.62 443]
