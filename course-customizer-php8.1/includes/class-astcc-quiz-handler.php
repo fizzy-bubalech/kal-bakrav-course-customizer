@@ -63,6 +63,8 @@ class ASTCC_Quiz_Handler
         return $exercise["is_time"];
     }
 
+    
+
     /**
      * Get exercise from question ID
      *
@@ -78,9 +80,9 @@ class ASTCC_Quiz_Handler
             }
             $question_text = $question["question"];
             $match = preg_match_all(
-                '/(\[eval formula=(["\'`])(.*?)\2\])/',
-                $question_text,
-                $matches
+                pattern: '/(\[eval formula=(["\'`])(.*?)\2\])/',
+                subject: $question_text,
+                matches: $matches
             );
 
             if (!$match && empty($matches[3])) {

@@ -62,6 +62,29 @@ class ASTCC_Database_Manager
         }
     }
 
+    public function update_database(): void
+    {
+        /*@ Add status column if not exist */
+        $dbname = $this->wpdb->dbname;
+
+        $marks_table_name = $this->wpdb->prefix . "exercises";
+
+        $is_min_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'min'");
+
+        if (empty($is_min_col)) {
+            $add_min_column = "ALTER TABLE `{$marks_table_name}` ADD `min` VARCHAR(255) NULL DEFAULT NULL AFTER `is_time`;";
+
+            $this->wpdb->query($add_min_column);
+        }
+
+        $is_max_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'max'");
+
+        if (empty($is_max_col)) {
+            $add_max_column = "ALTER TABLE `{$marks_table_name}` ADD `status` VARCHAR(255) NULL DEFAULT NULL AFTER `min`; ";
+
+            $this->wpdb->query($add_max_column);
+        }
+    }
     /**
      * Function to check and log database information.
      *
@@ -167,7 +190,7 @@ class ASTCC_Database_Manager
      * @param int $quiz_id The ID of the quiz to check
      * @return bool True if completed, false otherwise
      */
-    public function check_quiz_completion($user_id = null, $quiz_id = null)
+    function check_quiz_completion($user_id = null, $quiz_id = null)
     {
         // If no user_id provided, get current user
         if (null === $user_id) {

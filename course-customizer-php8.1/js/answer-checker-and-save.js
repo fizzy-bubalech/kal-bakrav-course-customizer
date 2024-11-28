@@ -80,12 +80,45 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  function getQuestionsExerciseProperties() {
+    let quizMeta = document
+      .querySelector(".wpProQuiz_content")
+      .getAttribute("data-quiz-meta");
+    quizMeta = JSON.parse(quizMeta);
+    let quizId = quizMeta["quiz_pro_id"];
+
+    fetch(myAjax.ajaxurl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        action: "get_questions_exercise_properties",
+        nonce: myAjax.nonce,
+        quiz_id: quizId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          CourseCustomizer.questionsExerciseProperties = data.data;
+        } else {
+          console.error("Failed to load questions IsTime:", data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading questions IsTime:", error);
+      });
+  }
+
+
   window.CourseCustomizer = {
     validAnswers: {},
     currentAnswer: null,
     exerciseVariables: {},
     questionsIsTime: {},
     questionsAreRight: {},
+    questionsExerciseProperties: {},
   };
 
   function attachQuestionListeners() {
@@ -194,14 +227,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 3000);
   }
 
-  function isAnswerValid(answer, isTime) {
+  function isAnswerValid(answer, isTime,min = 1,max = 9999) {
     if (isTime) {
       if (typeof answer !== "string") return "Invalid input type";
       answer = answer.trim();
       const timeRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
-      if (!timeRegex.test(answer)) return "X";
-      const parts = answer.split(":");
-      if (parts.length < 2) return "X";
+      let matches = answer.match(timeRegex);
+      if (!matches) return "X";
+      const [_, hours, minutes, seconds] = matches;
+      if (!hours) return "X";
+      let time = (hours ? parseInt(hours) : 0) *60*60 + (minutes ? parseInt(minutes) : 0) *60 +(parseInt(seconds));
+      if (time < min | time > max)
+        return "X";
     } else {
       if (typeof answer === "string") {
         answer = answer.trim();
@@ -210,7 +247,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const numAnswer = Number(answer);
       if (isNaN(numAnswer) || !Number.isInteger(numAnswer))
         return "X";
-      if (numAnswer < 1 || numAnswer > 9999)
+
+      if (numAnswer < min | numAnswer > max)
         return "X";
     }
     return true;
@@ -218,14 +256,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function validateAndStoreAnswer(questionId) {
     const answer = CourseCustomizer.currentAnswer;
-    let isTime = CourseCustomizer.questionsIsTime[questionId];
+    let questionExercise = CourseCustomizer.questionsExerciseProperties[questionId];
+    let min = CourseCustomizer.questionsExerciseProperties[min];
+    let max = CourseCustomizer.questionsExerciseProperties[max];
 
-
-    isTime = isTime["is_time"];
+    isTime = questionExercise["is_time"];
     if (isTime === "0") isTime = false;
     if (isTime === "1") isTime = true;
 
-    const validationResult = isAnswerValid(answer, isTime);
+    const validationResult = isAnswerValid(answer, isTime,min = min, max = max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
     }
@@ -315,6 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
     getExerciseVariables();
     getQuestionsIsTime();
     attachQuestionListeners();
+    getQuestionsExerciseProperties();
     document.addEventListener("click", handleButtonClick);
 
 

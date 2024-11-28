@@ -357,7 +357,7 @@ class Course_Customizer
      *
      * @return void
      */
-    public function get_db_variables()
+    public function get_db_variables(): void
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
@@ -368,6 +368,8 @@ class Course_Customizer
             $db_variables[$exercise["exercise_name"]] = [
                 "exercise_id" => $exercise["exercise_id"],
                 "is_time" => $exercise["is_time"],
+                "min" => $exercise["min"],
+                "max" => $exercise["max"],
             ];
         }
 
@@ -379,7 +381,7 @@ class Course_Customizer
      *
      * @return void
      */
-    public function get_questions_is_time()
+    public function get_questions_is_time(): void
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
@@ -388,7 +390,7 @@ class Course_Customizer
             return;
         }
 
-        $quiz_id = json_decode(stripslashes($_POST["quiz_id"]), true);
+        $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]), associative: true);
 
         $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(
             $quiz_id
@@ -405,6 +407,40 @@ class Course_Customizer
 
         wp_send_json_success($questions_ids);
     }
+
+    /**
+     * Get questions exercise properties from the db, is_time, min, and max via AJAX.
+     *
+     * @return void
+     */
+    public function get_questions_exercise_properties(): void
+    {
+        check_ajax_referer("my_ajax_nonce", "nonce");
+
+        if (!isset($_POST["quiz_id"])) {
+            wp_send_json_error("The quiz ID is missing or null");
+            return;
+        }
+
+        $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]), true);
+
+        $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(
+            $quiz_id
+        );
+
+        foreach ($questions_ids as $question_id) {
+            $question_exercise = $this->quiz_handler->exercise_from_question_id(
+                $question_id
+            );
+            $questions_ids[$question_id] = [
+                "is_time" => $question_exercise["is_time"],
+                "min" => $question_exercise["min"],
+                "max" => $question_exercise["max"],
+            ];
+        }
+
+        wp_send_json_success($questions_ids);
+    }
 }
 
 /**
@@ -412,7 +448,7 @@ class Course_Customizer
  *
  * @return Course_Customizer The singleton instance of the Course_Customizer class.
  */
-function course_customizer()
+function course_customizer(): Course_Customizer
 {
     return Course_Customizer::get_instance();
 }
