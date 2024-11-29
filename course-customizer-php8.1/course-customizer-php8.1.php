@@ -126,6 +126,7 @@ class Course_Customizer
         ]);
         add_shortcode("quiz_completed_redirect", [$this, "quiz_completed_redirect_shortcode"]);
         add_shortcode("required_quiz", [$this, "required_quiz_shortcode"]);
+        $this->database_manager->add_min_max_columns();
     }
 
     function quiz_completed_redirect_shortcode($atts)
@@ -422,7 +423,7 @@ class Course_Customizer
             return;
         }
 
-        $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]), true);
+        $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]));
 
         $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(
             $quiz_id

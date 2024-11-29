@@ -78,7 +78,9 @@ class ASTCC_Admin
         if (isset($_POST["add_exercise"])) {
             $exercise_name = sanitize_text_field($_POST["exercise_name"]);
             $is_time = isset($_POST["is_time"]) ? 1 : 0;
-            $this->database_manager->add_exercise($exercise_name, $is_time);
+            $min = isset($_POST["min"]);
+            $max = isset($_POST["max"]);
+            $this->database_manager->add_exercise($exercise_name, $is_time, $min, $max);
         } elseif (isset($_POST["delete_exercise"])) {
             $exercise_id = intval($_POST["exercise_id"]);
             $this->database_manager->delete_exercise($exercise_id);

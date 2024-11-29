@@ -6,6 +6,21 @@ if (!defined("ABSPATH")) {
     exit(); // Exit if accessed directly
 }
 
+enum SQLtypes: string
+{
+
+    case CHAR = "CHAR";
+    case VARCHAR = "VARCHAR";
+    case BINARY = "BINARY";
+    case VARBINARY = "VARBINARY";
+    case TEXT = "TEXT";
+    case BLOB = "BLOB";
+    case BIT = "BIT";
+    case TINYINT = "TINYINT";
+    case INT = "INT";
+}
+
+
 class ASTCC_Database_Manager
 {
     /** @var \wpdb */
@@ -62,27 +77,100 @@ class ASTCC_Database_Manager
         }
     }
 
-    public function update_database(): void
+    public function add_min_max_columns(): void
     {
-        /*@ Add status column if not exist */
-        $dbname = $this->wpdb->dbname;
+        /*@ Add min and max columns if not exist */
+        $this->add_column("exercises", "min", SQLtypes::INT, 5, 1);
+        $this->add_column("exercises", "max", SQLtypes::INT, 5, 86400);
+    }
 
-        $marks_table_name = $this->wpdb->prefix . "exercises";
+    public function update_exercise(string $exercise_name = null, bool $is_time = null, int $min = null, int $max = null, int $exercise_id)
+    {
+        $exercise = $this->get_exercise_by_id($exercise_id);
+        $data = [
+            'exercise_name' => $exercise_name?->$exercise["exercise_name"],
+            'is_time' => $is_time?->$exercise["is_time"],
+            'min' => $min?->$exercise["min"],
+            'max' => $max?->$exercise["max"],
+        ];
+        $where = [
+            "exercise_id" => $exercise_id,
+        ];
+        $data_format = [
+            "%s",
+            "%d",
+            "%d",
+            "%d",
+        ];
+        $where_format = [
+            "%d"
+        ];
 
-        $is_min_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'min'");
+        $this->update_custom_table_entry("execrises", $data, $where, $data_format, $where_format);
+    }
 
-        if (empty($is_min_col)) {
-            $add_min_column = "ALTER TABLE `{$marks_table_name}` ADD `min` VARCHAR(255) NULL DEFAULT NULL AFTER `is_time`;";
 
-            $this->wpdb->query($add_min_column);
+    function update_custom_table_entry($table_name, $data, $where, $data_format = null, $where_format = null)
+    {
+        $wpdb = $this->wpdb;
+
+        // Ensure table name has the WordPress prefix
+        if (strpos($table_name, $wpdb->prefix) !== 0) {
+            $table_name = $wpdb->prefix . $table_name;
         }
 
-        $is_max_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'max'");
+        // Validate table exists
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'");
+        if (!$table_exists) {
+            return new WP_Error('invalid_table', "Table $table_name does not exist.");
+        }
 
-        if (empty($is_max_col)) {
-            $add_max_column = "ALTER TABLE `{$marks_table_name}` ADD `status` VARCHAR(255) NULL DEFAULT NULL AFTER `min`; ";
+        // Validate data is not empty
+        if (empty($data) || !is_array($data)) {
+            return new WP_Error('invalid_data', 'Update data must be provided as an array.');
+        }
 
-            $this->wpdb->query($add_max_column);
+        // Validate where clause is not empty
+        if (empty($where) || !is_array($where)) {
+            return new WP_Error('invalid_where', 'Where conditions must be provided as an array.');
+        }
+
+        try {
+            // Perform the update
+            $result = $wpdb->update(
+                $table_name,
+                $data,
+                $where,
+                $data_format,
+                $where_format
+            );
+
+            if ($result === false) {
+                return new WP_Error('update_failed', 'Database update failed: ' . $wpdb->last_error);
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            return new WP_Error('update_error', $e->getMessage());
+        }
+    }
+
+
+
+    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size, mixed $default = "NULL")
+    {
+        /*@ Add column if not exists */
+        $dbname = $this->wpdb->dbname;
+
+        $marks_table_name = $this->wpdb->prefix . $table_name;
+
+
+        $is_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = '{$column_name}'");
+        $type_size = "{$type->value}" . "({$size})";
+        if (empty($is_col)) {
+            $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default};";
+
+            $this->wpdb->query($add_column);
         }
     }
     /**
@@ -94,7 +182,6 @@ class ASTCC_Database_Manager
     {
         // Get and log the MariaDB version
         $version = $this->wpdb->get_var("SELECT VERSION()");
-
         // Check for InnoDB support
         $engines = $this->wpdb->get_results("SHOW ENGINES", ARRAY_A);
         $innodb_support = "No";
@@ -266,7 +353,7 @@ class ASTCC_Database_Manager
      * @param bool $is_time Whether the exercise is time-based.
      * @return void
      */
-    public function add_exercise(string $exercise_name, bool $is_time): void
+    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max): void
     {
         $table_name = $this->wpdb->prefix . "exercises";
 
@@ -275,6 +362,8 @@ class ASTCC_Database_Manager
             [
                 "exercise_name" => $exercise_name,
                 "is_time" => $is_time,
+                "min" => $min,
+                "max" => $max,
             ],
             ["%s", "%d"]
         );

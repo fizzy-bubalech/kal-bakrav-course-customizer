@@ -12,6 +12,15 @@
                 <th scope="row"><label for="is_time">Is Time-based?</label></th>
                 <td><input name="is_time" id="is_time" type="checkbox"></td>
             </tr>
+            <tr>
+                <th scope="row"><label for="min">Min Value (in seconds if time)</label></th>
+                <td><input name="min" id="min" type="number" required></td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="max">Max Value (in seconds if time)</label></th>
+                <td><input name="max" id="max" type="number" required></td>
+            </tr>
+
         </table>
         <?php submit_button('Add Exercise', 'primary', 'add_exercise'); ?>
     </form>
@@ -28,17 +37,17 @@
         </thead>
         <tbody>
             <?php foreach ($exercises as $exercise): ?>
-            <tr>
-                <td><?php echo esc_html($exercise['exercise_id']); ?></td>
-                <td><?php echo esc_html($exercise['exercise_name']); ?></td>
-                <td><?php echo $exercise['is_time'] ? 'Yes' : 'No'; ?></td>
-                <td>
-                    <form method="post" action="" onsubmit="return confirm('Are you sure you want to delete this exercise?');">
-                        <input type="hidden" name="exercise_id" value="<?php echo esc_attr($exercise['exercise_id']); ?>">
-                        <?php submit_button('Delete', 'delete', 'delete_exercise', false); ?>
-                    </form>
-                </td>
-            </tr>
+                <tr>
+                    <td><?php echo esc_html($exercise['exercise_id']); ?></td>
+                    <td><?php echo esc_html($exercise['exercise_name']); ?></td>
+                    <td><?php echo $exercise['is_time'] ? 'Yes' : 'No'; ?></td>
+                    <td>
+                        <form method="post" action="" onsubmit="return confirm('Are you sure you want to delete this exercise?');">
+                            <input type="hidden" name="exercise_id" value="<?php echo esc_attr($exercise['exercise_id']); ?>">
+                            <?php submit_button('Delete', 'delete', 'delete_exercise', false); ?>
+                        </form>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
