@@ -32,6 +32,8 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Is Time-based</th>
+                <th>Min</th>
+                <th>Max</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -41,6 +43,8 @@
                     <td><?php echo esc_html($exercise['exercise_id']); ?></td>
                     <td><?php echo esc_html($exercise['exercise_name']); ?></td>
                     <td><?php echo $exercise['is_time'] ? 'Yes' : 'No'; ?></td>
+                    <td><?php echo $exercise['min'] ?></td>
+                    <td><?php echo $exercise['max'] ?></td>
                     <td>
                         <form method="post" action="" onsubmit="return confirm('Are you sure you want to delete this exercise?');">
                             <input type="hidden" name="exercise_id" value="<?php echo esc_attr($exercise['exercise_id']); ?>">

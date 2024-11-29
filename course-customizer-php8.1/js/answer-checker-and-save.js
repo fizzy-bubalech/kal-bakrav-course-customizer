@@ -234,9 +234,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const timeRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
       let matches = answer.match(timeRegex);
       if (!matches) return "X";
+    console.log("got here");
       const [_, hours, minutes, seconds] = matches;
-      if (!hours) return "X";
+      if (!minutes) return "X";
       let time = (hours ? parseInt(hours) : 0) *60*60 + (minutes ? parseInt(minutes) : 0) *60 +(parseInt(seconds));
+      console.log(time);
       if (time < min | time > max)
         return "X";
     } else {
@@ -257,13 +259,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function validateAndStoreAnswer(questionId) {
     const answer = CourseCustomizer.currentAnswer;
     let questionExercise = CourseCustomizer.questionsExerciseProperties[questionId];
-    let min = CourseCustomizer.questionsExerciseProperties[min];
-    let max = CourseCustomizer.questionsExerciseProperties[max];
+    let min = questionExercise["min"];
+    let max = questionExercise["max"];
 
-    isTime = questionExercise["is_time"];
+    let isTime = questionExercise["is_time"];
     if (isTime === "0") isTime = false;
     if (isTime === "1") isTime = true;
-
     const validationResult = isAnswerValid(answer, isTime,min = min, max = max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
@@ -356,9 +357,6 @@ document.addEventListener("DOMContentLoaded", function () {
     attachQuestionListeners();
     getQuestionsExerciseProperties();
     document.addEventListener("click", handleButtonClick);
-
-
- 
   }
 
   init();

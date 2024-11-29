@@ -124,6 +124,15 @@ class Course_Customizer
             $this,
             "get_questions_is_time",
         ]);
+
+        add_action("wp_ajax_get_questions_exercise_properties", [
+            $this,
+            "get_questions_exercise_properties",
+        ]);
+        add_action("wp_ajax_nopriv_get_questions_exercise_properties", [
+            $this,
+            "get_questions_exercise_properties",
+        ]);
         add_shortcode("quiz_completed_redirect", [$this, "quiz_completed_redirect_shortcode"]);
         add_shortcode("required_quiz", [$this, "required_quiz_shortcode"]);
         $this->database_manager->add_min_max_columns();
