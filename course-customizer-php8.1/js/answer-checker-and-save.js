@@ -1,363 +1,516 @@
-document.addEventListener("DOMContentLoaded", function () {
-  function disableAllQuizNavigationButtons() {
-    const backButtons = document.querySelectorAll(
-      '.wpProQuiz_button[name="back"]'
-    );
-    const nextButtons = document.querySelectorAll(
-      '.wpProQuiz_button[name="next"]'
-    );
-
-    const checkSingleButtons = document.querySelectorAll('.wpProQuiz_button[name="checkSingle"]');
-
-
-    backButtons.forEach((button) => {
-      button.disabled = true;
-    });
-
-
-    checkSingleButtons.forEach((button) => {
-      button.disabled = true;
-    });
-
-
-    nextButtons.forEach((button) => {
-      button.disabled = true;
-    });
-  }
-
-  function getExerciseVariables() {
-    fetch(myAjax.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        action: "get_db_variables",
-        nonce: myAjax.nonce,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          CourseCustomizer.exerciseVariables = data.data;
-        } else {
-          console.error("Failed to load exercise variables:", data.error);
-        }
-      })
-      .catch((error) => {
-        console.error("Error loading exercise variables:", error);
-      });
-  }
-
-  function getQuestionsIsTime() {
-    let quizMeta = document
-      .querySelector(".wpProQuiz_content")
-      .getAttribute("data-quiz-meta");
-    quizMeta = JSON.parse(quizMeta);
-    let quizId = quizMeta["quiz_pro_id"];
-
-    fetch(myAjax.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        action: "get_questions_is_time",
-        nonce: myAjax.nonce,
-        quiz_id: quizId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          CourseCustomizer.questionsIsTime = data.data;
-        } else {
-          console.error("Failed to load questions IsTime:", data.error);
-        }
-      })
-      .catch((error) => {
-        console.error("Error loading questions IsTime:", error);
-      });
-  }
-
-  function getQuestionsExerciseProperties() {
-    let quizMeta = document
-      .querySelector(".wpProQuiz_content")
-      .getAttribute("data-quiz-meta");
-    quizMeta = JSON.parse(quizMeta);
-    let quizId = quizMeta["quiz_pro_id"];
-
-    fetch(myAjax.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        action: "get_questions_exercise_properties",
-        nonce: myAjax.nonce,
-        quiz_id: quizId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          CourseCustomizer.questionsExerciseProperties = data.data;
-        } else {
-          console.error("Failed to load questions IsTime:", data.error);
-        }
-      })
-      .catch((error) => {
-        console.error("Error loading questions IsTime:", error);
-      });
-  }
-
-
-  window.CourseCustomizer = {
+// Initialize CourseCustomizer object to store global state
+window.CourseCustomizer = {
     validAnswers: {},
     currentAnswer: null,
     exerciseVariables: {},
     questionsIsTime: {},
     questionsAreRight: {},
     questionsExerciseProperties: {},
-  };
+    initialized: false
+};
 
-  function attachQuestionListeners() {
-    const questionItems = document.querySelectorAll('.wpProQuiz_listItem');
-    questionItems.forEach(questionItem => {
-      const questionMeta = JSON.parse(questionItem.getAttribute("data-question-meta"));
-      const questionId = questionMeta["question_pro_id"];
-      CourseCustomizer.questionsAreRight[questionId] = false;
-      // Find the input/textarea within this question item
-      const inputElement = questionItem.querySelector('input[type="text"], textarea');
-      
-      if (inputElement) {
-        inputElement.addEventListener("keyup", (e) => handleQuestionKeyStroke(e, questionItem, questionId));
-      }
+// Ensure DOM is fully loaded before starting
+function ensureDOMReady() {
+    return new Promise(resolve => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', resolve);
+        } else {
+            resolve();
+        }
     });
-  }
+}
 
-  function handleQuestionKeyStroke(e, questionItem, questionId) {
-    const button = document.querySelector('.wpProQuiz_QuestionButton:not([style*="display: none"]');
-
-
-    if (hasAnswerChanged(questionItem)) {
-      const validationResult = validateAndStoreAnswer(questionId);
-
-      const inputElement = questionItem.querySelector('input[type="text"], textarea');
-      if (validationResult === true) {
-        showAnswerPopup(inputElement, "✓", true);
-      } else {
-        showAnswerPopup(inputElement, validationResult, false);
-      }
-      CourseCustomizer.questionsAreRight[questionId] = (validationResult === true);
-      let valid = true;
-      for(let key in CourseCustomizer.questionsAreRight){
-        valid = valid && CourseCustomizer.questionsAreRight[key];
-
-      }
-
-      toggleProceedButtonVisibility(button, valid);
+// Validate required dependencies
+function validateDependencies() {
+    if (typeof myAjax === 'undefined' || !myAjax.ajaxurl || !myAjax.nonce) {
+        throw new Error('Required myAjax configuration is missing');
     }
-  }
+    
+    const quizContent = document.querySelector('.wpProQuiz_content');
+    if (!quizContent) {
+        throw new Error('Quiz content element not found');
+    }
+    
+    return true;
+}
 
-  function hasAnswerChanged(questionItem) {
+// Disable all quiz navigation buttons
+function disableAllQuizNavigationButtons() {
+    try {
+        const buttons = {
+            back: document.querySelectorAll('.wpProQuiz_button[name="back"]'),
+            next: document.querySelectorAll('.wpProQuiz_button[name="next"]'),
+            checkSingle: document.querySelectorAll('.wpProQuiz_button[name="checkSingle"]')
+        };
+
+        Object.values(buttons).forEach(buttonGroup => {
+            buttonGroup.forEach(button => {
+                button.disabled = true;
+            });
+        });
+    } catch (error) {
+        console.error('Error disabling quiz buttons:', error);
+        throw error;
+    }
+}
+
+// Fetch exercise variables with proper error handling
+async function loadExerciseVariables() {
+    try {
+        const response = await fetch(myAjax.ajaxurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'get_db_variables',
+                nonce: myAjax.nonce,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to load exercise variables');
+        }
+
+        return data.data;
+    } catch (error) {
+        console.error('Error loading exercise variables:', error);
+        throw error;
+    }
+}
+
+// Get quiz ID with validation
+function getQuizId() {
+    try {
+        const quizContent = document.querySelector('.wpProQuiz_content');
+        if (!quizContent) {
+            throw new Error('Quiz content element not found');
+        }
+
+        const quizMetaStr = quizContent.getAttribute('data-quiz-meta');
+        if (!quizMetaStr) {
+            throw new Error('Quiz meta data not found');
+        }
+
+        const quizMeta = JSON.parse(quizMetaStr);
+        if (!quizMeta.quiz_pro_id) {
+            throw new Error('Quiz ID not found in meta data');
+        }
+
+        return quizMeta.quiz_pro_id;
+    } catch (error) {
+        console.error('Error getting quiz ID:', error);
+        throw error;
+    }
+}
+
+// Load questions time data
+async function loadQuestionsIsTime() {
+    try {
+        const quizId = getQuizId();
+        
+        const response = await fetch(myAjax.ajaxurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'get_questions_is_time',
+                nonce: myAjax.nonce,
+                quiz_id: quizId,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to load questions time data');
+        }
+
+        return data.data;
+    } catch (error) {
+        console.error('Error loading questions time data:', error);
+        throw error;
+    }
+}
+
+// Load question exercise properties
+async function loadQuestionExerciseProperties() {
+    try {
+        const quizId = getQuizId();
+        
+        const response = await fetch(myAjax.ajaxurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'get_questions_exercise_properties',
+                nonce: myAjax.nonce,
+                quiz_id: quizId,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to load question properties');
+        }
+
+        return data.data;
+    } catch (error) {
+        console.error('Error loading question properties:', error);
+        throw error;
+    }
+}
+
+// Attach event listeners to questions
+function attachQuestionListeners() {
+    const questionItems = document.querySelectorAll('.wpProQuiz_listItem');
+    if (questionItems.length === 0) {
+        console.warn('No question items found in DOM');
+        return false;
+    }
+
+    questionItems.forEach(questionItem => {
+        try {
+            const questionMeta = JSON.parse(questionItem.getAttribute("data-question-meta"));
+            if (!questionMeta || !questionMeta["question_pro_id"]) {
+                console.warn('Invalid question metadata', questionItem);
+                return;
+            }
+
+            const questionId = questionMeta["question_pro_id"];
+            CourseCustomizer.questionsAreRight[questionId] = false;
+
+            const inputElement = questionItem.querySelector('input[type="text"], textarea');
+            if (inputElement) {
+                // Initialize the current answer as empty string instead of null
+                CourseCustomizer.currentAnswer = '';
+                
+                // Add both keyup and input listeners to ensure we catch all changes
+                inputElement.addEventListener("keyup", (e) => handleQuestionKeyStroke(e, questionItem, questionId));
+                inputElement.addEventListener("input", (e) => handleQuestionKeyStroke(e, questionItem, questionId));
+            }
+        } catch (error) {
+            console.error('Error attaching listener to question:', error);
+        }
+    });
+
+    return true;
+}
+// Handle keystrokes in question inputs
+function handleQuestionKeyStroke(e, questionItem, questionId) {
+    try {
+        const button = document.querySelector('.wpProQuiz_QuestionButton:not([style*="display: none"])');
+
+        if (hasAnswerChanged(questionItem)) {
+            const validationResult = validateAndStoreAnswer(questionId);
+
+            const inputElement = questionItem.querySelector('input[type="text"], textarea');
+            if (inputElement) {
+                showAnswerPopup(inputElement, validationResult === true ? "✓" : validationResult, validationResult === true);
+            }
+
+            CourseCustomizer.questionsAreRight[questionId] = (validationResult === true);
+            
+            const allQuestionsValid = Object.values(CourseCustomizer.questionsAreRight)
+                .every(isRight => isRight === true);
+
+            toggleProceedButtonVisibility(button, allQuestionsValid);
+        }
+    } catch (error) {
+        console.error('Error handling question keystroke:', error);
+    }
+}
+
+// Check if answer has changed
+function hasAnswerChanged(questionItem) {
     const newAnswer = getAnswerFromQuestionItem(questionItem);
     if (newAnswer !== CourseCustomizer.currentAnswer) {
-      CourseCustomizer.currentAnswer = newAnswer;
-      return true;
+        CourseCustomizer.currentAnswer = newAnswer;
+        return true;
     }
     return false;
-  }
+}
 
-  function getAnswerFromQuestionItem(questionItem) {
-    const questionType = questionItem.dataset.type;
-    let answer;
+// Get answer from question item
+function getAnswerFromQuestionItem(questionItem) {
+    try {
+        const questionType = questionItem.dataset.type;
+        let answer;
 
-    switch (questionType) {
-      case "single":
-        const checkedRadio = questionItem.querySelector('input[type="radio"]:checked');
-        answer = checkedRadio ? checkedRadio.value : null;
-        break;
-      case "multiple":
-        answer = Array.from(questionItem.querySelectorAll('input[type="checkbox"]:checked'))
-          .map((cb) => cb.value);
-        break;
-      case "free_answer":
-      case "essay":
-        const input = questionItem.querySelector('input[type="text"], textarea');
-        answer = input ? input.value : null;
-        break;
-      default:
-        console.error("Unknown question type:", questionType);
-        answer = null;
-    }
-
-    return answer;
-  }
-
-  function showAnswerPopup(inputElement, message, isValid) {
-    // Remove any existing popup
-    const existingPopup = document.getElementById("answerPopup");
-    if (existingPopup) existingPopup.remove();
-
-    // Create popup element
-    const popup = document.createElement("div");
-    popup.id = "answerPopup";
-    popup.textContent = message;
-    popup.style.cssText = `
-      position: absolute;
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 14px;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    `;
-
-    popup.style.backgroundColor = isValid ? "#4CAF50" : "#ff6b6b";
-
-    const rect = inputElement.getBoundingClientRect();
-    popup.style.top = `${rect.bottom + window.scrollY + 5}px`;
-    popup.style.left = `${rect.left + window.scrollX}px`;
-
-    document.body.appendChild(popup);
-
-    setTimeout(() => {
-      popup.remove();
-    }, 3000);
-  }
-
-  function isAnswerValid(answer, isTime,min = 1,max = 9999) {
-    if (isTime) {
-      if (typeof answer !== "string") return "Invalid input type";
-      answer = answer.trim();
-      const timeRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
-      let matches = answer.match(timeRegex);
-      if (!matches) return "X";
-    console.log("got here");
-      const [_, hours, minutes, seconds] = matches;
-      if (!minutes) return "X";
-      let time = (hours ? parseInt(hours) : 0) *60*60 + (minutes ? parseInt(minutes) : 0) *60 +(parseInt(seconds));
-      console.log(time);
-      if (time < min | time > max)
-        return "X";
-    } else {
-      if (typeof answer === "string") {
-        answer = answer.trim();
-        if (!/^\d+$/.test(answer)) return 'X';
-      }
-      const numAnswer = Number(answer);
-      if (isNaN(numAnswer) || !Number.isInteger(numAnswer))
-        return "X";
-
-      if (numAnswer < min | numAnswer > max)
-        return "X";
-    }
-    return true;
-  }
-
-  function validateAndStoreAnswer(questionId) {
-    const answer = CourseCustomizer.currentAnswer;
-    let questionExercise = CourseCustomizer.questionsExerciseProperties[questionId];
-    let min = questionExercise["min"];
-    let max = questionExercise["max"];
-
-    let isTime = questionExercise["is_time"];
-    if (isTime === "0") isTime = false;
-    if (isTime === "1") isTime = true;
-    const validationResult = isAnswerValid(answer, isTime,min = min, max = max);
-    if (validationResult === true) {
-      storeValidAnswer(answer, questionId);
-    }
-    return validationResult;
-  }
-
-  function storeValidAnswer(answer, questionId) {
-    CourseCustomizer.validAnswers[questionId] = answer;
-  }
-
-  function toggleProceedButtonVisibility(button, isValid) {
-    if (button) {
-
-      button.disabled = !isValid;
-    }else{
-
-    }
-  }
-
-  function submitAllAnswers() {
-    console.log("Submitting all answers");
-    console.log(JSON.stringify(CourseCustomizer.validAnswers));
-    fetch(myAjax.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        action: "save_quiz_results",
-        quizData: JSON.stringify(CourseCustomizer.validAnswers),
-        nonce: myAjax.nonce,
-      }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          if (data.data && data.data.redirect_url) {
-            // If a redirect URL is provided, redirect to it
-            setTimeout(() => {
-              window.location.href = data.data.redirect_url;
-            }, 3000);
-          }
-          console.log(data.data);
-          // If no redirect URL, continue as normal
-        } else {
-          showPopupErrorAndReload();
+        switch (questionType) {
+            case 'single':
+                const checkedRadio = questionItem.querySelector('input[type="radio"]:checked');
+                answer = checkedRadio ? checkedRadio.value : null;
+                break;
+            case 'multiple':
+                answer = Array.from(questionItem.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
+                break;
+            case 'free_answer':
+            case 'essay':
+                const input = questionItem.querySelector('input[type="text"], textarea');
+                answer = input ? input.value : null;
+                break;
+            default:
+                console.warn('Unknown question type:', questionType);
+                answer = null;
         }
-      })
-      .catch((error) => {
-        console.error("Quiz submission error:", error);
-        console.error("Error details:", error.message, error.stack);
-        showPopupErrorAndReload();
-      });
-  }
 
-  function showPopupErrorAndReload() {
-    alert("There was an error. Please try again.");
-    location.reload();
-  }
-
-  function handleButtonClick(e) {
-    if (!e.target.classList.contains("wpProQuiz_button")) return;
-
-    if (
-      e.target.value === "Finish Quiz" ||
-      e.target.textContent.trim() === "Finish Quiz" ||
-      e.target.value === "סיים מבחן" ||
-      e.target.textContent.trim() === "סיים מבחן"
-    ) {
-      submitAllAnswers();
-    } else if (
-      e.target.value === "back" ||
-      e.target.textContent.trim() === "back" ||
-      e.target.name === "back"
-    ) {
-      CourseCustomizer.currentAnswer = null;
-    } else {
-      CourseCustomizer.currentAnswer = null;
+        return answer;
+    } catch (error) {
+        console.error('Error getting answer from question item:', error);
+        return null;
     }
-  }
+}
 
-  // Initialize
-  function init() {
-    disableAllQuizNavigationButtons();
-    getExerciseVariables();
-    getQuestionsIsTime();
-    attachQuestionListeners();
-    getQuestionsExerciseProperties();
-    document.addEventListener("click", handleButtonClick);
-  }
+// Show answer popup
+function showAnswerPopup(inputElement, message, isValid) {
+    try {
+        // Remove existing popup
+        const existingPopup = document.getElementById('answerPopup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
 
-  init();
-});
+        // Create new popup
+        const popup = document.createElement('div');
+        popup.id = 'answerPopup';
+        popup.textContent = message;
+        popup.style.cssText = `
+            position: absolute;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background-color: ${isValid ? '#4CAF50' : '#ff6b6b'};
+        `;
+
+        const rect = inputElement.getBoundingClientRect();
+        popup.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        popup.style.left = `${rect.left + window.scrollX}px`;
+
+        document.body.appendChild(popup);
+
+        setTimeout(() => {
+            popup.remove();
+        }, 3000);
+    } catch (error) {
+        console.error('Error showing answer popup:', error);
+    }
+}
+
+// Validate answer
+function isAnswerValid(answer, isTime, min = 1, max = 9999) {
+    try {
+        if (isTime) {
+            if (typeof answer !== 'string') return 'Invalid input type';
+            
+            answer = answer.trim();
+            const timeRegex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
+            const matches = answer.match(timeRegex);
+            
+            if (!matches) return 'X';
+            
+            const [_, hours, minutes, seconds] = matches;
+            if (!minutes) return 'X';
+            
+            const time = (hours ? parseInt(hours) : 0) * 3600 +
+                        (minutes ? parseInt(minutes) : 0) * 60 +
+                        (parseInt(seconds) || 0);
+            
+            if (time < min) return "מהר מדי";
+            if (time > max) return "לאט מדי";
+        } else {
+            if (typeof answer === 'string') {
+                answer = answer.trim();
+                if (!/^\d+$/.test(answer)) return 'X';
+            }
+            
+            const numAnswer = Number(answer);
+            if (isNaN(numAnswer) || !Number.isInteger(numAnswer)) return 'X';
+            if (numAnswer < min || numAnswer > max) return 'בטוח? תבדוק שוב';
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error validating answer:', error);
+        return 'X';
+    }
+}
+
+// Validate and store answer
+function validateAndStoreAnswer(questionId) {
+    try {
+        const answer = CourseCustomizer.currentAnswer;
+        const questionExercise = CourseCustomizer.questionsExerciseProperties[questionId];
+        
+        if (!questionExercise) {
+            console.error('Question exercise properties not found for ID:', questionId);
+            return 'X';
+        }
+
+        const min = parseInt(questionExercise.min);
+        const max = parseInt(questionExercise.max);
+        const isTime = questionExercise.is_time === '1';
+
+        const validationResult = isAnswerValid(answer, isTime, min, max);
+        if (validationResult === true) {
+            storeValidAnswer(answer, questionId);
+        }
+        
+        return validationResult;
+    } catch (error) {
+        console.error('Error validating and storing answer:', error);
+        return 'X';
+    }
+}
+
+// Store valid answer
+function storeValidAnswer(answer, questionId) {
+    CourseCustomizer.validAnswers[questionId] = answer;
+}
+
+// Toggle proceed button visibility
+function toggleProceedButtonVisibility(button, isValid) {
+    if (button) {
+        button.disabled = !isValid;
+    }
+}
+
+// Submit all answers
+async function submitAllAnswers() {
+    try {
+        console.log('Submitting answers:', JSON.stringify(CourseCustomizer.validAnswers));
+        
+        const response = await fetch(myAjax.ajaxurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'save_quiz_results',
+                quizData: JSON.stringify(CourseCustomizer.validAnswers),
+                nonce: myAjax.nonce,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.success) {
+            throw new Error(data.error || 'Failed to save quiz results');
+        }
+
+        if (data.data?.redirect_url) {
+            setTimeout(() => {
+                window.location.href = data.data.redirect_url;
+            }, 3000);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error submitting answers:', error);
+        showPopupErrorAndReload();
+        throw error;
+    }
+}
+
+// Show error popup and reload
+function showPopupErrorAndReload() {
+    alert('There was an error. Please try again.');
+    location.reload();
+}
+
+// Handle button clicks
+function handleButtonClick(e) {
+    try {
+        if (!e.target.classList.contains('wpProQuiz_button')) return;
+
+        const buttonText = e.target.value || e.target.textContent.trim();
+        const isFinishButton = ['Finish Quiz', 'סיים מבחן'].includes(buttonText);
+        const isBackButton = buttonText === 'back' || e.target.name === 'back';
+
+        if (isFinishButton) {
+            submitAllAnswers();
+        } else {
+            CourseCustomizer.currentAnswer = null;
+        }
+    } catch (error) {
+        console.error('Error handling button click:', error);
+    }
+}
+
+// Main initialization function
+async function init() {
+    try {
+        // Validate dependencies first
+        validateDependencies();
+        
+        // Disable navigation buttons
+        disableAllQuizNavigationButtons();
+        
+        // Load all required data concurrently
+        const [exerciseVars, questionsTime, questionProperties] = await Promise.all([
+            loadExerciseVariables(),
+            loadQuestionsIsTime(),
+            loadQuestionExerciseProperties()
+        ]);
+        
+        // Set the loaded data to CourseCustomizer
+        CourseCustomizer.exerciseVariables = exerciseVars;
+        CourseCustomizer.questionsIsTime = questionsTime;
+        CourseCustomizer.questionsExerciseProperties = questionProperties;
+        
+        // Attach listeners only after data is loaded
+        attachQuestionListeners();
+        
+        // Add click handler
+        document.addEventListener('click', handleButtonClick);
+        
+        // Mark as initialized
+        CourseCustomizer.initialized = true;
+        
+        console.log('Quiz initialization completed successfully');
+    } catch (error) {
+        console.error('Failed to initialize quiz:', error);
+        showPopupErrorAndReload();
+        throw error;
+    }
+}
+
+// Start the application with proper error handling
+async function startApplication() {
+    try {
+        // Ensure DOM is ready before starting
+        await ensureDOMReady();
+        
+        // Initialize the application
+        await init();
+        
+        console.log('Application started successfully');
+    } catch (error) {
+        console.error('Failed to start application:', error);
+        showPopupErrorAndReload();
+    }
+}
+
+// Start the application when the script loads
+startApplication();
