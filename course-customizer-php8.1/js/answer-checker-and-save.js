@@ -2,8 +2,6 @@
 window.CourseCustomizer = {
     validAnswers: {},
     currentAnswer: null,
-    exerciseVariables: {},
-    questionsIsTime: {},
     questionsAreRight: {},
     questionsExerciseProperties: {},
     initialized: false
@@ -54,36 +52,6 @@ function disableAllQuizNavigationButtons() {
     }
 }
 
-// Fetch exercise variables with proper error handling
-async function loadExerciseVariables() {
-    try {
-        const response = await fetch(myAjax.ajaxurl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                action: 'get_db_variables',
-                nonce: myAjax.nonce,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (!data.success) {
-            throw new Error(data.error || 'Failed to load exercise variables');
-        }
-
-        return data.data;
-    } catch (error) {
-        console.error('Error loading exercise variables:', error);
-        throw error;
-    }
-}
-
 // Get quiz ID with validation
 function getQuizId() {
     try {
@@ -109,38 +77,6 @@ function getQuizId() {
     }
 }
 
-// Load questions time data
-async function loadQuestionsIsTime() {
-    try {
-        const quizId = getQuizId();
-        
-        const response = await fetch(myAjax.ajaxurl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                action: 'get_questions_is_time',
-                nonce: myAjax.nonce,
-                quiz_id: quizId,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (!data.success) {
-            throw new Error(data.error || 'Failed to load questions time data');
-        }
-
-        return data.data;
-    } catch (error) {
-        console.error('Error loading questions time data:', error);
-        throw error;
-    }
-}
 
 // Load question exercise properties
 async function loadQuestionExerciseProperties() {
@@ -468,15 +404,11 @@ async function init() {
         disableAllQuizNavigationButtons();
         
         // Load all required data concurrently
-        const [exerciseVars, questionsTime, questionProperties] = await Promise.all([
-            loadExerciseVariables(),
-            loadQuestionsIsTime(),
+        const [questionProperties] = await Promise.all([
             loadQuestionExerciseProperties()
         ]);
         
         // Set the loaded data to CourseCustomizer
-        CourseCustomizer.exerciseVariables = exerciseVars;
-        CourseCustomizer.questionsIsTime = questionsTime;
         CourseCustomizer.questionsExerciseProperties = questionProperties;
         
         // Attach listeners only after data is loaded
@@ -491,7 +423,6 @@ async function init() {
         console.log('Quiz initialization completed successfully');
     } catch (error) {
         console.error('Failed to initialize quiz:', error);
-        showPopupErrorAndReload();
         throw error;
     }
 }
@@ -508,7 +439,6 @@ async function startApplication() {
         console.log('Application started successfully');
     } catch (error) {
         console.error('Failed to start application:', error);
-        showPopupErrorAndReload();
     }
 }
 
