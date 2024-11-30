@@ -9,3 +9,8 @@
     pointer-events: none;
     cursor: default;
 }
+
+.learndash-incomplete:where(.learndash-incomplete + .learndash-incomplete) .ld-item-title,
+.incomplete-learndash:last-child .ld-item-title{
+filter: blur(0.5rem) !important;
+}
