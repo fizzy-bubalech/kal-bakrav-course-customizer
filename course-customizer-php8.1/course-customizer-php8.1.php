@@ -102,6 +102,10 @@ class Course_Customizer
             "enqueue_answer_checker_script",
         ]);
 
+        add_action("wp_enqueue_scripts", [
+            $this,
+            "enqueue_course_page_script",
+        ]);
         add_action('wp_enqueue_scripts', [$this, 'course_page_style']);
         add_action("wp_ajax_ajax_validate_quiz_answers", [
             $this,
@@ -165,6 +169,37 @@ class Course_Customizer
             plugin_dir_url(__FILE__) . "js/{$script_filename}",
             ["jquery"],
             filemtime(plugin_dir_path(__FILE__) . "js/answer-checker-and-save.js"),
+            true
+        );
+
+        wp_localize_script($script_handle, "myAjax", [
+            "ajaxurl" => admin_url("admin-ajax.php"),
+            "nonce" => wp_create_nonce("my_ajax_nonce"),
+        ]);
+        $script_enqueued = true;
+    }
+    public function enqueue_course_page_script()
+    {
+        $script_handle = "course-page-script";
+        $script_filename = "course-page-script.js";
+        $script_dir = "includes/js/";
+        $post_type = get_post_type();
+        // Create an array of our target post types
+        $quiz_related_types = array(
+            'sfwd-lessons',
+            'sfwd-topic',
+        );
+
+        if (!in_array($post_type, $quiz_related_types)) return;
+        static $script_enqueued = false;
+        if ($script_enqueued) {
+            return;
+        }
+        wp_enqueue_script(
+            $script_handle,
+            plugin_dir_url(__FILE__) . "{$script_dir}{$script_filename}",
+            ["jquery"],
+            filemtime(plugin_dir_path(__FILE__) . "{$script_dir}.{$script_filename}"),
             true
         );
 
