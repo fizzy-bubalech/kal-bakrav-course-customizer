@@ -52,6 +52,45 @@ function disableAllQuizNavigationButtons() {
     }
 }
 
+function add_checkbox(){
+    
+    let checkSingleButton = document.querySelector('.wpProQuiz_button[name="checkSingle"]');
+
+    if (!checkSingleButton) return;
+    // Create checkbox
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = 'confirmCheckbox';
+    checkbox.style.marginRight = '5px';  // Add some space between checkbox and label
+    
+    // Create label
+    const label = document.createElement('label');
+    label.dir = "rtl";
+    label.htmlFor = 'confirmCheckbox';
+    label.textContent = 'לא תוכל לבצע הזנת תוצאות נוספת! אתה בטוח בנתונים שהזנת?';
+    
+    // Insert them directly before the button
+    checkSingleButton.parentNode.insertBefore(label, checkSingleButton);
+    checkSingleButton.parentNode.insertBefore(checkbox, label);
+    
+    // Add line break between checkbox and button
+    const lineBreak = document.createElement('br');
+    checkSingleButton.parentNode.insertBefore(lineBreak, checkSingleButton);
+
+    // Toggling based on css since the disabled is being used by checker, so both this would have to allow and the checker
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            checkSingleButton.style.pointerEvents = 'auto';
+            checkSingleButton.style.cursor = 'pointer';
+        } else {
+            checkSingleButton.style.pointerEvents = 'none';
+            checkSingleButton.style.cursor = 'default';
+        }
+    });
+    
+
+}
+
 // Get quiz ID with validation
 function getQuizId() {
     try {
@@ -413,6 +452,9 @@ async function init() {
         
         // Attach listeners only after data is loaded
         attachQuestionListeners();
+
+        //Add the submit checkbox
+        add_checkbox();
         
         // Add click handler
         document.addEventListener('click', handleButtonClick);

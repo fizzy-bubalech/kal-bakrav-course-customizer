@@ -19,6 +19,7 @@ require_once __DIR__ . "/includes/class-astcc-quiz-handler.php";
 require_once __DIR__ . "/includes/class-astcc-expression-evaluator.php";
 require_once __DIR__ . "/includes/class-astcc-admin.php";
 require_once __DIR__ . "/includes/class-astcc-data-visualization.php";
+require_once __DIR__ . "/includes/class-astcc-shortcodes.php";
 
 class Course_Customizer
 {
@@ -30,6 +31,7 @@ class Course_Customizer
     public $admin;
     public $data_visualization;
     public $quiz_completion_redirect_url;
+    public $shortcode_manager;
 
     private function __construct()
     {
@@ -49,6 +51,9 @@ class Course_Customizer
         $this->admin->init_ajax_handlers();
 
         $this->data_visualization = new \CourseCustomizer\ASTCC_Data_Visualization(
+            $this->database_manager
+        );
+        $this->shortcode_manager = new \CourseCustomizer\ASTCC_Shotcodes(
             $this->database_manager
         );
 
@@ -96,6 +101,8 @@ class Course_Customizer
             $this,
             "enqueue_answer_checker_script",
         ]);
+
+        add_action('wp_enqueue_scripts', [$this, 'course_page_style']);
         add_action("wp_ajax_ajax_validate_quiz_answers", [
             $this,
             "ajax_validate_quiz_answers",
@@ -133,95 +140,31 @@ class Course_Customizer
             $this,
             "get_questions_exercise_properties",
         ]);
-        add_shortcode("quiz_completed_redirect", [$this, "quiz_completed_redirect_shortcode"]);
-        add_shortcode("required_quiz", [$this, "required_quiz_shortcode"]);
         $this->database_manager->add_min_max_columns();
     }
 
-    function quiz_completed_redirect_shortcode($atts)
-    {
-
-        // Define default attributes
-        $defaults = array(
-            'url' => '#', // Default URL if none provided
-        );
-        $href = null;
-        if (isset($atts[2])) {
-            $href = $atts[2];
-        }
-        // Parse and merge the attributes
-        $atts = shortcode_atts($defaults, $atts, 'quiz_completed_redirect');
-
-        error_log("HEREREREREE");
-        error_log(print_r($atts, true));
-        // Get the URL from attributes
-        $url = $atts['url'];
-        if (isset($href)) {
-
-            // Extract URL from the href attribute
-            if (preg_match('/href="([^"]+)"/', $href, $matches)) {
-                $url = $matches[1];
-            }
-        }
-
-        $url = esc_url_raw(trim($url));
-
-        error_log('Processed URL: ' . $url);
-
-        // Store the URL in WordPress options with the current user ID
-        $user_id = get_current_user_id();
-        update_option('quiz_completion_redirect_' . $user_id, $url);
-
-        return ''; // Return empty string as we don't need to output anything
-    }
-    function required_quiz_shortcode($atts)
-    {
-        $atts = shortcode_atts(
-            array(
-                'quiz_id' => 0,
-            ),
-            $atts,
-            'required_quiz'
-        );
-
-        $quiz_id = intval($atts['quiz_id']);
-        $completed = $this->database_manager->check_quiz_completion(null, $quiz_id);
-
-        if (!$completed) {
-            // Get the quiz permalink
-            $quiz_url = get_permalink($quiz_id);
-
-            // Check if quiz URL exists
-            if (!$quiz_url) {
-                return '<div class="quiz-status error">Quiz not found.</div>';
-            }
-
-            // Add JavaScript redirect
-            $output = '<script type="text/javascript">';
-            $output .= 'window.location.href = "' . esc_url($quiz_url) . '";';
-            $output .= '</script>';
-
-            // Fallback message in case JavaScript is disabled
-            $output .= '<div class="quiz-status not-completed">';
-            $output .= 'Quiz not completed. ';
-            $output .= '<a href="' . esc_url($quiz_url) . '">Click here</a> if you are not automatically redirected.';
-            $output .= '</div>';
-
-            return $output;
-        }
-
-        return;
-    }
     public function enqueue_answer_checker_script()
     {
         $script_handle = "answer-checker-and-save";
         $script_filename = "answer-checker-and-save.js";
+        $post_type = get_post_type();
+        // Create an array of our target post types
+        $quiz_related_types = array(
+            'sfwd-quiz',
+            'sfwd-question',
+            'sfwd-essays'
+        );
 
+        if (!in_array($post_type, $quiz_related_types)) return;
+        static $script_enqueued = false;
+        if ($script_enqueued) {
+            return;
+        }
         wp_enqueue_script(
             $script_handle,
             plugin_dir_url(__FILE__) . "js/{$script_filename}",
             ["jquery"],
-            time(),
+            filemtime(plugin_dir_path(__FILE__) . "js/answer-checker-and-save.js"),
             true
         );
 
@@ -229,6 +172,22 @@ class Course_Customizer
             "ajaxurl" => admin_url("admin-ajax.php"),
             "nonce" => wp_create_nonce("my_ajax_nonce"),
         ]);
+        $script_enqueued = true;
+    }
+    public function course_page_style()
+    {
+        $post_type = get_post_type();
+        if ($post_type != "sfwd-courses") {
+            error_log("didn't detect a course page");
+            return;
+        }
+        static $style_enqueued = false;
+        if ($style_enqueued) return;
+        $style_handle = "course-style";
+        $style_filename = "course-style.css";
+        wp_enqueue_style($style_handle, plugins_url("includes/css/{$style_filename}", __FILE__), filemtime(plugin_dir_path(__FILE__) . "includes/css/{$style_filename}"));
+        error_log("enqueued style after detecting a course page");
+        $style_enqueued = false;
     }
 
     public function activation_notice()

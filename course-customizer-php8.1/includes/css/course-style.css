@@ -1,0 +1,11 @@
+.learndash-complete:has(.ld-table-list-item-quiz) {
+    display: none;
+}
+/* Selects .incomplete-learndash that either:
+   1. follows another .incomplete-learndash, OR
+   2. is the last child */
+.learndash-incomplete:where(.learndash-incomplete + .learndash-incomplete) a,
+.incomplete-learndash:last-child a{
+    pointer-events: none;
+    cursor: default;
+}
