@@ -74,6 +74,10 @@ Put int(EXPRESSION) around a *whole* expression to force an int output.
 - Added the `[user_display_name]` shortcode which returns the current user's display. 
 - Optimized the answer checker. Now registers any input imidiatly.
 - Added special messages if the user provides answers out of the min max bounds. 
+- Added checkbox to quiz with message clearfing the one-time nature of the quiz 
+- Move shortcodes to their own class in /includs 
+- Added css to disable future lessons in course page 
+- Added a script in lessons that disables the "Next Lesson" button if the next lesson hasn't been completed. 
 
 ### 0.2.7
 
