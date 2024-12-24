@@ -92,7 +92,7 @@ class ASTCC_Expression_Evaluator
                 $this->allowed_functions
             )
         ) {
-            return $debug . "Function call detected";
+            return $debug . "<!--Function call detected-->";
         }
 
         try {
@@ -100,7 +100,7 @@ class ASTCC_Expression_Evaluator
             $debug .= "<!-- Debug: Variables = " . print_r($variables, true) . " -->\n";
 
             if ($this->is_dbtype_variable($variables)) {
-                return $debug . "dbtype variable detected";
+                return $debug . "<!-- dbtype variable detected-->";
             }
 
             $variables_and_values = $this->fetch_variables_from_db($variables);
@@ -162,11 +162,8 @@ class ASTCC_Expression_Evaluator
     public function has_function_call($expression, $allowed_functions)
     {
         foreach ($allowed_functions as $func_name => $func_call) {
-            // Check that the function name isn't preceded by a $
-            if (
-                strpos($expression, $func_name) !== false &&
-                strpos($expression, '$' . $func_name) === false
-            ) {
+            // Check for function name followed by opening parenthesis
+            if (preg_match('/\b' . preg_quote($func_name) . '\s*\(/', $expression)) {
                 return true;
             }
         }
