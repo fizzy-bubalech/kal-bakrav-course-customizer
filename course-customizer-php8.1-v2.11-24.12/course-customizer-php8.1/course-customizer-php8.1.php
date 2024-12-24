@@ -3,11 +3,11 @@
 /**
  * Plugin Name: Course Customizer php8.1
  * Description: Adds custom database tables for storing additional data and custom filters to inject user result data into courses.
- * Version: 0.2.11
+ * Version: 0.2.10
  * Author: AST
  */
 
-define("COURSE_CUSTOMIZER_VERSION", "0.2.11");
+define("COURSE_CUSTOMIZER_VERSION", "0.2.10");
 
 if (!defined("ABSPATH")) {
     exit(); // Exit if accessed directly
