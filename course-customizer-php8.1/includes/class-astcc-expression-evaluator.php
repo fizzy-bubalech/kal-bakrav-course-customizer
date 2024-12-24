@@ -249,9 +249,7 @@ class ASTCC_Expression_Evaluator
                     "Metric entry '$variable' not found for user."
                 );
             }
-            $variables_and_values[$variable] = is_numeric($value)
-                ? floatval($value)
-                : $value;
+            $variables_and_values[$variable] = is_numeric($value) ? round($value, 0) : round(strval($value, 0));
         }
 
         return $variables_and_values;
@@ -331,6 +329,6 @@ class ASTCC_Expression_Evaluator
             }
             return $formatted_time;
         }
-        return is_numeric($result) ? round($result) : round(strval($result));
+        return is_numeric($result) ? round($result, 0) : round(strval($result, 0));
     }
 }
