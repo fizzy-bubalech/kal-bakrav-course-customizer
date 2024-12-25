@@ -370,6 +370,13 @@ function validateAndStoreAnswer(questionId) {
       return "X";
     }
 
+    if (
+      questionExercise.min === null ||
+      questionExercise.max === null ||
+      questionExercise.is_time === null
+    ) {
+      return true;
+    }
     const min = parseInt(questionExercise.min);
     const max = parseInt(questionExercise.max);
     const isTime = questionExercise.is_time === "1";
