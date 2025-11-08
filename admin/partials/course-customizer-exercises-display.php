@@ -13,6 +13,10 @@
                 <td><input name="is_time" id="is_time" type="checkbox"></td>
             </tr>
             <tr>
+                <th scope="row"><label for="is_time">Is Text-based?</label></th>
+                <td><input name="is_text" id="is_text" type="checkbox"></td>
+            </tr>
+            <tr>
                 <th scope="row"><label for="min">Min Value (in seconds if time)</label></th>
                 <td><input name="min" id="min" type="number" required></td>
             </tr>
@@ -32,6 +36,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Is Time-based</th>
+                <th>Is Text-based</th>
                 <th>Min</th>
                 <th>Max</th>
                 <th>Action</th>

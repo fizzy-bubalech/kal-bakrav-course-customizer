@@ -19,7 +19,11 @@ enum SQLtypes: string
     case TINYINT = "TINYINT";
     case INT = "INT";
 }
-
+enum ExerciseTypes: string {
+    case TIME = "TIME";
+    case COUNT = "COUNT";
+    case TEXT = "TEXT";
+}
 
 class ASTCC_Database_Manager
 {
@@ -77,12 +81,6 @@ class ASTCC_Database_Manager
         }
     }
 
-    public function add_min_max_columns(): void
-    {
-        /*@ Add min and max columns if not exist */
-        $this->add_column("exercises", "min", SQLtypes::INT, 5, 1);
-        $this->add_column("exercises", "max", SQLtypes::INT, 5, 86400);
-    }
 
     public function update_exercise(string $exercise_name = null, bool $is_time = null, int $min = null, int $max = null, int $exercise_id)
     {
@@ -175,9 +173,9 @@ class ASTCC_Database_Manager
 
 
 
-    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size, mixed $default = "NULL")
+    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size = "0", mixed $default = "NULL")
     {
-        /*@ Add column if not exists */
+      /*@ Add column if it does not exist and also populate it in all existing rows in the table with the default provided. */
         $dbname = $this->wpdb->dbname;
 
         $marks_table_name = $this->wpdb->prefix . $table_name;
@@ -185,12 +183,28 @@ class ASTCC_Database_Manager
 
         $is_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = '{$column_name}'");
         $type_size = "{$type->value}" . "({$size})";
-        if (empty($is_col)) {
+        $no_size_types = ['TEXT', 'DATE', 'DATETIME', 'TIMESTAMP', 'BOOLEAN', 'TINYINT'];
+        if (empty($is_col) &&) {
             $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default};";
 
             $this->wpdb->query($add_column);
         }
     }
+
+
+    public function add_min_max_columns(): void
+    {
+        /*@ Add min and max columns if not exist */
+        $this->add_column("exercises", "min", SQLtypes::INT, 5, 1);
+        $this->add_column("exercises", "max", SQLtypes::INT, 5, 86400);
+    }
+
+    public function add_exercise_type_column(): void
+    {
+        /*@ Add Exercise Types column if it does not exist */
+        $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT)
+    }
+
     /**
      * Function to check and log database information.
      *
