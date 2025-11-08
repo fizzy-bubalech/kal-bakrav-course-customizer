@@ -184,10 +184,14 @@ class ASTCC_Database_Manager
         $is_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = '{$column_name}'");
         $type_size = "{$type->value}" . "({$size})";
         $no_size_types = ['TEXT', 'DATE', 'DATETIME', 'TIMESTAMP', 'BOOLEAN', 'TINYINT'];
-        if (empty($is_col) &&) {
+        if (empty($is_col)) {
             $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default};";
 
             $this->wpdb->query($add_column);
+
+            if($column_name == "exercises"){
+              $this->populate_execersie_type_column();
+            }
         }
     }
 
@@ -203,6 +207,32 @@ class ASTCC_Database_Manager
     {
         /*@ Add Exercise Types column if it does not exist */
         $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT)
+    }
+
+    public function populate_execersie_type_column(): void
+    {
+        /* @ Populate the exercise type column based on the is time-based column */
+        
+        // Get the full table name
+        $full_table_name = $this->wpdb->prefix . "exercises";
+
+        // Get the string values from the enum
+        $time_type = ExerciseTypes::TIME->value;   // "TIME"
+        $count_type = ExerciseTypes::COUNT->value; // "COUNT"
+
+        // Prepare the SQL query
+        // This query updates all rows at once using a CASE statement.
+        // If is_time is 1 (true), set exercise_type to "TIME".
+        // Otherwise (if is_time is 0 or NULL), set it to "COUNT".
+        $sql = $this->wpdb->prepare(
+            "UPDATE %i SET exercise_type = CASE WHEN is_time = 1 THEN %s ELSE %s END",
+            $full_table_name,
+            $time_type,
+            $count_type
+        );
+
+        // Execute the query
+        $this->wpdb->query($sql);
     }
 
     /**

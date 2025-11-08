@@ -145,6 +145,7 @@ class Course_Customizer
             "get_questions_exercise_properties",
         ]);
         $this->database_manager->add_min_max_columns();
+        $this->database_manager->add_exercise_type_column();
     }
 
     public function enqueue_answer_checker_script()
