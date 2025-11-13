@@ -374,6 +374,7 @@ class Course_Customizer
                 "is_time" => $exercise["is_time"],
                 "min" => $exercise["min"],
                 "max" => $exercise["max"],
+                "exercise_type" => $exercise["exercise_type"]
             ];
         }
 
@@ -440,6 +441,7 @@ class Course_Customizer
                 "is_time" => $question_exercise["is_time"],
                 "min" => $question_exercise["min"],
                 "max" => $question_exercise["max"],
+                "exercise_type" => $question_exercise["exercise_type"],
             ];
         }
 

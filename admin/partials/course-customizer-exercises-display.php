@@ -9,13 +9,15 @@
                 <td><input name="exercise_name" id="exercise_name" type="text" required></td>
             </tr>
             <tr>
-                <th scope="row"><label for="is_time">Is Time-based?</label></th>
-                <td><input name="is_time" id="is_time" type="checkbox"></td>
-            </tr>
-            <tr>
-                <th scope="row"><label for="is_time">Is Text-based?</label></th>
-                <td><input name="is_text" id="is_text" type="checkbox"></td>
-            </tr>
+                <th scope="row"><label for="exercise_type">Exercise Type</label></th>
+                <td>
+                    <select name="exercise_type" id="exercise_type">
+                        <option value="COUNT">Reps-based</option>
+                        <option value="TIME">Time-based</option>
+                        <option value="TEXT">Text-based</option>
+                    </select>
+                </td>
+            </tr>
             <tr>
                 <th scope="row"><label for="min">Min Value (in seconds if time)</label></th>
                 <td><input name="min" id="min" type="number" required></td>
@@ -36,9 +38,9 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Is Time-based</th>
-                <th>Is Text-based</th>
                 <th>Min</th>
                 <th>Max</th>
+                <th>Exercise Type</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -50,6 +52,7 @@
                     <td><?php echo $exercise['is_time'] ? 'Yes' : 'No'; ?></td>
                     <td class="trigger inline-cell"><?php echo $exercise['min'] ?><span class="hover-target dashicons dashicons-edit"></span></td>
                     <td><?php echo $exercise['max'] ?></td>
+                    <td><?php echo $exercise['exercise_type'] ?></td>
                     <td>
                         <form method="post" action="" onsubmit="return confirm('Are you sure you want to delete this exercise?');">
                             <input type="hidden" name="exercise_id" value="<?php echo esc_attr($exercise['exercise_id']); ?>">

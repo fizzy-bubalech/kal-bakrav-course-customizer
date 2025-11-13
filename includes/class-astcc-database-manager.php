@@ -173,7 +173,7 @@ class ASTCC_Database_Manager
 
 
 
-    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size = "0", mixed $default = "NULL")
+    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size = 0, mixed $default = "NULL")
     {
       /*@ Add column if it does not exist and also populate it in all existing rows in the table with the default provided. */
         $dbname = $this->wpdb->dbname;
@@ -185,12 +185,33 @@ class ASTCC_Database_Manager
         $type_size = "{$type->value}" . "({$size})";
         $no_size_types = ['TEXT', 'DATE', 'DATETIME', 'TIMESTAMP', 'BOOLEAN', 'TINYINT'];
         if (empty($is_col)) {
-            $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default};";
+          
+            if ($default instanceof \BackedEnum) {
+                $default_value = $default->value;
+            } else {
+                $default_value = $default;
+            }
+
+            // 2. Format the value for the SQL query
+            $default_sql_value = 'NULL'; // Default to the NULL keyword
+
+            if (is_string($default_value) && strtoupper($default_value) !== 'NULL') {
+                // It's a string (like 'COUNT'), so quote it safely
+                $default_sql_value = $this->wpdb->prepare('%s', $default_value);
+            } elseif (is_numeric($default_value)) {
+                // It's a number (like 1), so use it directly
+                $default_sql_value = $default_value;
+            }
+            // If it was the string 'NULL', it remains 'NULL' from the initial assignment.
+
+            // 3. Build the query with the correctly formatted default value
+            $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default_sql_value};";
 
             $this->wpdb->query($add_column);
 
-            if($column_name == "exercises"){
+            if($column_name == "exercise_type"){
               $this->populate_execersie_type_column();
+              error_log("ADDING EXERCISE TYPE COLUMN AND POPULATING IT");
             }
         }
     }
@@ -206,7 +227,7 @@ class ASTCC_Database_Manager
     public function add_exercise_type_column(): void
     {
         /*@ Add Exercise Types column if it does not exist */
-        $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT)
+        $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT);
     }
 
     public function populate_execersie_type_column(): void
@@ -415,7 +436,7 @@ class ASTCC_Database_Manager
      * @param bool $is_time Whether the exercise is time-based.
      * @return void
      */
-    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max): void
+    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max, ExerciseTypes $exercise_type): void
     {
         $table_name = $this->wpdb->prefix . "exercises";
 
@@ -426,6 +447,7 @@ class ASTCC_Database_Manager
                 "is_time" => $is_time,
                 "min" => $min,
                 "max" => $max,
+                "exercise_type" => $this->wpdb->prepare('%s', $exercise_type),
             ],
             ["%s", "%d"]
         );
@@ -731,7 +753,7 @@ class ASTCC_Database_Manager
             : "result_date";
         $order = strtoupper($order) === "ASC" ? "ASC" : "DESC";
 
-        $query = "SELECT r.*, e.exercise_name, e.is_time, u.display_name as user_name
+        $query = "SELECT r.*, e.exercise_name, e.exercise_type, u.display_name as user_name
                       FROM {$this->wpdb->prefix}results r
                       JOIN {$this->wpdb->prefix}exercises e ON r.exercise_id = e.exercise_id
                       JOIN {$this->wpdb->prefix}users u ON r.user_id = u.ID
@@ -764,7 +786,7 @@ class ASTCC_Database_Manager
 
         foreach ($exercises as $exercise_name) {
             $query = $this->wpdb->prepare(
-                "SELECT r.result, r.result_date, e.is_time
+                "SELECT r.result, r.result_date, e.exercise_type
                     FROM {$this->wpdb->prefix}results r
                     JOIN {$this->wpdb->prefix}exercises e ON r.exercise_id = e.exercise_id
                     WHERE r.user_id = %d AND e.exercise_name = %s

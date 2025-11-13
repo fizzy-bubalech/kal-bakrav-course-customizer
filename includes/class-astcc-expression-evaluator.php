@@ -239,7 +239,7 @@ class ASTCC_Expression_Evaluator
             }
             $exercise_id = $exercise["exercise_id"];
             $is_time = $exercise["is_time"];
-
+            $exercise_type = $exercise["exercise_type"];
             $value = $this->database_manager->get_latest_result_by_exercise_id(
                 $exercise_id
             );
@@ -267,7 +267,7 @@ class ASTCC_Expression_Evaluator
             $exercise = $this->database_manager->get_exercise_by_name(
                 $variable
             );
-            if ($exercise !== null && $exercise["is_time"]) {
+            if ($exercise !== null && $exercise["exercise_type"] == "TIME") {
                 return true;
             }
         }
