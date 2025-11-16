@@ -173,7 +173,7 @@ class ASTCC_Database_Manager
 
 
 
-    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size = 0, mixed $default = "NULL")
+    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size = 1, mixed $default = "NULL")
     {
       /*@ Add column if it does not exist and also populate it in all existing rows in the table with the default provided. */
         $dbname = $this->wpdb->dbname;
@@ -436,10 +436,9 @@ class ASTCC_Database_Manager
      * @param bool $is_time Whether the exercise is time-based.
      * @return void
      */
-    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max, ExerciseTypes $exercise_type): void
+    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max, string $exercise_type): void
     {
-        $table_name = $this->wpdb->prefix . "exercises";
-
+        $table_name = $this->wpdb->prefix . "exercises"; 
         $this->wpdb->insert(
             $table_name,
             [
@@ -447,7 +446,7 @@ class ASTCC_Database_Manager
                 "is_time" => $is_time,
                 "min" => $min,
                 "max" => $max,
-                "exercise_type" => $this->wpdb->prepare('%s', $exercise_type),
+                "exercise_type" => $exercise_type,
             ],
             ["%s", "%d"]
         );
