@@ -316,9 +316,9 @@ function showAnswerPopup(inputElement, message, isValid) {
 }
 
 // Validate answer
-function isAnswerValid(answer, isTime, min = 1, max = 9999) {
+function isAnswerValid(answer, exercise_type, min = 1, max = 9999) {
   try {
-    if (isTime) {
+    if (exercise_type === "TIME") {
       if (typeof answer !== "string") return "Invalid input type";
 
       answer = answer.trim();
@@ -337,7 +337,7 @@ function isAnswerValid(answer, isTime, min = 1, max = 9999) {
 
       if (time < min) return "מהר מדי";
       if (time > max) return "לאט מדי";
-    } else {
+    } else if (exercise_type === "COUNT") {
       if (typeof answer === "string") {
         answer = answer.trim();
         if (!/^\d+$/.test(answer)) return "X";
@@ -346,14 +346,22 @@ function isAnswerValid(answer, isTime, min = 1, max = 9999) {
       const numAnswer = Number(answer);
       if (isNaN(numAnswer) || !Number.isInteger(numAnswer)) return "X";
       if (numAnswer < min || numAnswer > max) return "בטוח? תבדוק שוב";
+    } else {
+
+      if (typeof answer === "string") {
+        answer = answer.trim();
+        if (answer.lenght > max || answer.length < min) return "תשובה ארוכה מדי";
+      }
     }
 
     return true;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error validating answer:", error);
     return "X";
   }
 }
+
 
 // Validate and store answer
 function validateAndStoreAnswer(questionId) {
@@ -373,15 +381,15 @@ function validateAndStoreAnswer(questionId) {
     if (
       questionExercise.min === null ||
       questionExercise.max === null ||
-      questionExercise.is_time === null
+      questionExercise.exercise_type === null
     ) {
       return true;
     }
     const min = parseInt(questionExercise.min);
     const max = parseInt(questionExercise.max);
-    const isTime = questionExercise.is_time === "1";
-
-    const validationResult = isAnswerValid(answer, isTime, min, max);
+    const exerciseType = questionExercise.exercise_type;
+    console.log(exerciseType);
+    const validationResult = isAnswerValid(answer, exerciseType, min, max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
     }
