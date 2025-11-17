@@ -68,13 +68,10 @@ Put int(EXPRESSION) around a *whole* expression to force an int output.
 
 ## Changelog
 
-<<<<<<< HEAD
-=======
 ### 0.3.1
 
 - Small bug fixes
 
->>>>>>> dev
 ### 0.3.0
 
 - Added text based exercises 

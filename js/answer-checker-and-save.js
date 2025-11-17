@@ -351,14 +351,17 @@ function isAnswerValid(answer, exercise_type, min = 1, max = 9999) {
       if (typeof answer === "string") {
         answer = answer.trim();
         if (answer.lenght > max || answer.length < min) return "תשובה ארוכה מדי";
+      }
     }
 
     return true;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error validating answer:", error);
     return "X";
   }
 }
+
 
 // Validate and store answer
 function validateAndStoreAnswer(questionId) {
@@ -384,9 +387,9 @@ function validateAndStoreAnswer(questionId) {
     }
     const min = parseInt(questionExercise.min);
     const max = parseInt(questionExercise.max);
-    const isTime = questionExercise.exercise_type === "TIME";
-
-    const validationResult = isAnswerValid(answer, isTime, min, max);
+    const exerciseType = questionExercise.exercise_type;
+    console.log(exerciseType);
+    const validationResult = isAnswerValid(answer, exerciseType, min, max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
     }
