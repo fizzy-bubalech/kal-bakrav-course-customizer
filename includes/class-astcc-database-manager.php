@@ -229,7 +229,11 @@ class ASTCC_Database_Manager
         /*@ Add Exercise Types column if it does not exist */
         $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT);
     }
-
+    public function add_exercise_description_column(): void
+    {
+      /*@ Add Exercise Description column if it does not exist*/
+      $this->add_column("exercises", "exercise_description", SQLtypes::VARCHAR, 300, "");
+    }
     public function populate_execersie_type_column(): void
     {
         /* @ Populate the exercise type column based on the is time-based column */
@@ -295,6 +299,23 @@ class ASTCC_Database_Manager
         return $this->wpdb->get_row($query, ARRAY_A);
     }
 
+    /**
+     * Get an array of exercises by ID.
+     *
+     * @param array $exercise_ids The exercises' IDs.
+     * @return array|null The exercise data or null if not found.
+     */
+    public function get_exercises_by_id(array $exercise_ids): ?array
+    {
+        if(empty($exercise_ids)) return [];
+        $integer_ids = array_map('intval', $exercise_ids);
+        $placeholders = implode(', ', array_fill(0, count($integer_ids), '%d'));
+        $query = $this->wpdb->prepare(
+            "SELECT * FROM {$this->wpdb->prefix}exercises WHERE exercise_id IN ($placeholders)",
+            $integer_ids
+        );
+        return $this->wpdb->get_results($query, ARRAY_A);
+    }
     /**
      * Get exercise by name.
      *
@@ -436,7 +457,7 @@ class ASTCC_Database_Manager
      * @param bool $is_time Whether the exercise is time-based.
      * @return void
      */
-    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max, string $exercise_type): void
+    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max, string $exercise_type, string $exercise_description): void
     {
         $table_name = $this->wpdb->prefix . "exercises"; 
         $this->wpdb->insert(
@@ -447,6 +468,7 @@ class ASTCC_Database_Manager
                 "min" => $min,
                 "max" => $max,
                 "exercise_type" => $exercise_type,
+                "exercise_description" => $exercise_description,
             ],
             ["%s", "%d"]
         );
@@ -800,6 +822,43 @@ class ASTCC_Database_Manager
         return $results;
     }
 
+    public function get_exercises_results_by_id(array $exercise_ids): array {
+        
+        if (empty($exercise_ids)) {
+            return [];
+        }
+
+        $integer_ids = array_map('intval', $exercise_ids);
+
+        $placeholders = implode(', ', array_fill(0, count($integer_ids), '%d'));
+
+        // We select the exercise_id so we can group the results in PHP.
+        $query = $this->wpdb->prepare(
+            "SELECT r.exercise_id, r.result, r.result_date, e.exercise_type, r.user_id
+             FROM {$this->wpdb->prefix}results r
+             JOIN {$this->wpdb->prefix}exercises e ON r.exercise_id = e.exercise_id
+             WHERE e.exercise_id IN ($placeholders)
+             ORDER BY r.exercise_id, r.result_date DESC",
+            $integer_ids
+        );
+
+        $all_results = $this->wpdb->get_results($query, ARRAY_A);
+
+        // This ensures you get a key for every ID, even if it has no results.
+        $results = array_fill_keys($integer_ids, []);
+
+        // 7. Group the flat results by their exercise_id
+        if ($all_results) {
+            foreach ($all_results as $row) {
+                $id = (int) $row['exercise_id'];
+                // We don't need to include the exercise_id in the sub-array
+                unset($row['exercise_id']); 
+                $results[$id][] = $row;
+            }
+        }
+
+        return $results;
+    }
     public function update_results_to_realistic_values(): void
     {
         $table_name = $this->wpdb->prefix . "results";

@@ -20,12 +20,14 @@ require_once __DIR__ . "/includes/class-astcc-expression-evaluator.php";
 require_once __DIR__ . "/includes/class-astcc-admin.php";
 require_once __DIR__ . "/includes/class-astcc-data-visualization.php";
 require_once __DIR__ . "/includes/class-astcc-shortcodes.php";
+require_once __DIR__ . "/includes/class-astcc-reports.php";
 
 class Course_Customizer
 {
     private static $instance = null;
     public $database_manager;
     public $quiz_handler;
+    public $report_maker;
     public $utilities;
     public $expression_evaluator;
     public $admin;
@@ -54,6 +56,9 @@ class Course_Customizer
             $this->database_manager
         );
         $this->shortcode_manager = new \CourseCustomizer\ASTCC_Shotcodes(
+            $this->database_manager
+        );
+        $this->shortcode_manager = new \CourseCustomizer\ASTCC_Reports(
             $this->database_manager
         );
 
@@ -146,6 +151,7 @@ class Course_Customizer
         ]);
         $this->database_manager->add_min_max_columns();
         $this->database_manager->add_exercise_type_column();
+        $this->database_manager->add_exercise_description_column();
     }
 
     public function enqueue_answer_checker_script()

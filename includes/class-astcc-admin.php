@@ -55,6 +55,16 @@ class ASTCC_Admin
             "course-customizer-results",
             [$this, "display_results_page"]
         );
+
+        add_submenu_page(
+            "course-customizer-settings",
+            "Generate Reports",
+            "Reports",
+            "manage_options",
+            "course-customizer-reports",
+            [$this, "display_reports_page"]
+        );
+
     }
 
     /**
@@ -68,6 +78,33 @@ class ASTCC_Admin
             "admin/partials/course-customizer-admin-display.php";
     }
 
+    public function display_reports_page()
+    {
+
+        $script_handle = "reports-page";
+        $script_filename = "reports-page.js";
+        $script_dir_path = "admin/js/";
+        $script_path = plugin_dir_path(dirname(__FILE__)) . $script_dir_path . $script_filename;
+        $script_version = file_exists($script_path) ? filemtime($script_path) : '1.0';
+        wp_enqueue_script(
+            $script_handle,
+            plugins_url($script_dir_path . $script_filename, dirname(__FILE__)),
+            array(), // Removed jQuery dependency
+            $script_version,
+            true
+        );
+
+        // Add inline editing nonce and AJAX URL
+        wp_localize_script($script_handle, 'reportsAdminObj', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('reports_nonce'),
+            'strings' => array(
+            )
+        ));
+        $exercises = $this->database_manager->get_all_exercises();
+        include_once plugin_dir_path(dirname(__FILE__)) .
+            "admin/partials/course-customizer-reports-display.php";
+    }
     /**
      * Displays the exercises management page.
      *
@@ -81,7 +118,8 @@ class ASTCC_Admin
             $min = isset($_POST["min"]) ? intval($_POST["min"]) : 0;
             $max = isset($_POST["max"]) ? intval($_POST["max"]) : 0;
             $exercise_type = sanitize_text_field($_POST['exercise_type']);
-            $this->database_manager->add_exercise($exercise_name, $is_time, $min, $max, $exercise_type);
+            $exercise_description = sanitize_text_field($_POST['description']);
+            $this->database_manager->add_exercise($exercise_name, $is_time, $min, $max, $exercise_type, $exercise_description);
         } elseif (isset($_POST["delete_exercise"])) {
             $exercise_id = intval($_POST["exercise_id"]);
             $this->database_manager->delete_exercise($exercise_id);
