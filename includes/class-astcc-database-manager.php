@@ -19,7 +19,11 @@ enum SQLtypes: string
     case TINYINT = "TINYINT";
     case INT = "INT";
 }
-
+enum ExerciseTypes: string {
+    case TIME = "TIME";
+    case COUNT = "COUNT";
+    case TEXT = "TEXT";
+}
 
 class ASTCC_Database_Manager
 {
@@ -77,12 +81,6 @@ class ASTCC_Database_Manager
         }
     }
 
-    public function add_min_max_columns(): void
-    {
-        /*@ Add min and max columns if not exist */
-        $this->add_column("exercises", "min", SQLtypes::INT, 5, 1);
-        $this->add_column("exercises", "max", SQLtypes::INT, 5, 86400);
-    }
 
     public function update_exercise(string $exercise_name = null, bool $is_time = null, int $min = null, int $max = null, int $exercise_id)
     {
@@ -175,9 +173,9 @@ class ASTCC_Database_Manager
 
 
 
-    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size, mixed $default = "NULL")
+    public function add_column(string $table_name, string $column_name, SQLtypes $type, int $size = 1, mixed $default = "NULL")
     {
-        /*@ Add column if not exists */
+      /*@ Add column if it does not exist and also populate it in all existing rows in the table with the default provided. */
         $dbname = $this->wpdb->dbname;
 
         $marks_table_name = $this->wpdb->prefix . $table_name;
@@ -185,12 +183,83 @@ class ASTCC_Database_Manager
 
         $is_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = '{$column_name}'");
         $type_size = "{$type->value}" . "({$size})";
+        $no_size_types = ['TEXT', 'DATE', 'DATETIME', 'TIMESTAMP', 'BOOLEAN', 'TINYINT'];
         if (empty($is_col)) {
-            $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default};";
+          
+            if ($default instanceof \BackedEnum) {
+                $default_value = $default->value;
+            } else {
+                $default_value = $default;
+            }
+
+            // 2. Format the value for the SQL query
+            $default_sql_value = 'NULL'; // Default to the NULL keyword
+
+            if (is_string($default_value) && strtoupper($default_value) !== 'NULL') {
+                // It's a string (like 'COUNT'), so quote it safely
+                $default_sql_value = $this->wpdb->prepare('%s', $default_value);
+            } elseif (is_numeric($default_value)) {
+                // It's a number (like 1), so use it directly
+                $default_sql_value = $default_value;
+            }
+            // If it was the string 'NULL', it remains 'NULL' from the initial assignment.
+
+            // 3. Build the query with the correctly formatted default value
+            $add_column = "ALTER TABLE `{$marks_table_name}` ADD `{$column_name}` {$type_size} NULL DEFAULT {$default_sql_value};";
 
             $this->wpdb->query($add_column);
+
+            if($column_name == "exercise_type"){
+              $this->populate_execersie_type_column();
+              error_log("ADDING EXERCISE TYPE COLUMN AND POPULATING IT");
+            }
         }
     }
+
+
+    public function add_min_max_columns(): void
+    {
+        /*@ Add min and max columns if not exist */
+        $this->add_column("exercises", "min", SQLtypes::INT, 5, 1);
+        $this->add_column("exercises", "max", SQLtypes::INT, 5, 86400);
+    }
+
+    public function add_exercise_type_column(): void
+    {
+        /*@ Add Exercise Types column if it does not exist */
+        $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT);
+    }
+    public function add_exercise_description_column(): void
+    {
+      /*@ Add Exercise Description column if it does not exist*/
+      $this->add_column("exercises", "exercise_description", SQLtypes::VARCHAR, 300, "");
+    }
+    public function populate_execersie_type_column(): void
+    {
+        /* @ Populate the exercise type column based on the is time-based column */
+        
+        // Get the full table name
+        $full_table_name = $this->wpdb->prefix . "exercises";
+
+        // Get the string values from the enum
+        $time_type = ExerciseTypes::TIME->value;   // "TIME"
+        $count_type = ExerciseTypes::COUNT->value; // "COUNT"
+
+        // Prepare the SQL query
+        // This query updates all rows at once using a CASE statement.
+        // If is_time is 1 (true), set exercise_type to "TIME".
+        // Otherwise (if is_time is 0 or NULL), set it to "COUNT".
+        $sql = $this->wpdb->prepare(
+            "UPDATE %i SET exercise_type = CASE WHEN is_time = 1 THEN %s ELSE %s END",
+            $full_table_name,
+            $time_type,
+            $count_type
+        );
+
+        // Execute the query
+        $this->wpdb->query($sql);
+    }
+
     /**
      * Function to check and log database information.
      *
@@ -230,6 +299,23 @@ class ASTCC_Database_Manager
         return $this->wpdb->get_row($query, ARRAY_A);
     }
 
+    /**
+     * Get an array of exercises by ID.
+     *
+     * @param array $exercise_ids The exercises' IDs.
+     * @return array|null The exercise data or null if not found.
+     */
+    public function get_exercises_by_id(array $exercise_ids): ?array
+    {
+        if(empty($exercise_ids)) return [];
+        $integer_ids = array_map('intval', $exercise_ids);
+        $placeholders = implode(', ', array_fill(0, count($integer_ids), '%d'));
+        $query = $this->wpdb->prepare(
+            "SELECT * FROM {$this->wpdb->prefix}exercises WHERE exercise_id IN ($placeholders)",
+            $integer_ids
+        );
+        return $this->wpdb->get_results($query, ARRAY_A);
+    }
     /**
      * Get exercise by name.
      *
@@ -371,10 +457,9 @@ class ASTCC_Database_Manager
      * @param bool $is_time Whether the exercise is time-based.
      * @return void
      */
-    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max): void
+    public function add_exercise(string $exercise_name, bool $is_time, int $min, int $max, string $exercise_type, string $exercise_description): void
     {
-        $table_name = $this->wpdb->prefix . "exercises";
-
+        $table_name = $this->wpdb->prefix . "exercises"; 
         $this->wpdb->insert(
             $table_name,
             [
@@ -382,6 +467,8 @@ class ASTCC_Database_Manager
                 "is_time" => $is_time,
                 "min" => $min,
                 "max" => $max,
+                "exercise_type" => $exercise_type,
+                "exercise_description" => $exercise_description,
             ],
             ["%s", "%d"]
         );
@@ -687,7 +774,7 @@ class ASTCC_Database_Manager
             : "result_date";
         $order = strtoupper($order) === "ASC" ? "ASC" : "DESC";
 
-        $query = "SELECT r.*, e.exercise_name, e.is_time, u.display_name as user_name
+        $query = "SELECT r.*, e.exercise_name, e.exercise_type, u.display_name as user_name
                       FROM {$this->wpdb->prefix}results r
                       JOIN {$this->wpdb->prefix}exercises e ON r.exercise_id = e.exercise_id
                       JOIN {$this->wpdb->prefix}users u ON r.user_id = u.ID
@@ -720,7 +807,7 @@ class ASTCC_Database_Manager
 
         foreach ($exercises as $exercise_name) {
             $query = $this->wpdb->prepare(
-                "SELECT r.result, r.result_date, e.is_time
+                "SELECT r.result, r.result_date, e.exercise_type
                     FROM {$this->wpdb->prefix}results r
                     JOIN {$this->wpdb->prefix}exercises e ON r.exercise_id = e.exercise_id
                     WHERE r.user_id = %d AND e.exercise_name = %s
@@ -735,6 +822,43 @@ class ASTCC_Database_Manager
         return $results;
     }
 
+    public function get_exercises_results_by_id(array $exercise_ids): array {
+        
+        if (empty($exercise_ids)) {
+            return [];
+        }
+
+        $integer_ids = array_map('intval', $exercise_ids);
+
+        $placeholders = implode(', ', array_fill(0, count($integer_ids), '%d'));
+
+        // We select the exercise_id so we can group the results in PHP.
+        $query = $this->wpdb->prepare(
+            "SELECT r.exercise_id, r.result, r.result_date, e.exercise_type, r.user_id
+             FROM {$this->wpdb->prefix}results r
+             JOIN {$this->wpdb->prefix}exercises e ON r.exercise_id = e.exercise_id
+             WHERE e.exercise_id IN ($placeholders)
+             ORDER BY r.exercise_id, r.result_date DESC",
+            $integer_ids
+        );
+
+        $all_results = $this->wpdb->get_results($query, ARRAY_A);
+
+        // This ensures you get a key for every ID, even if it has no results.
+        $results = array_fill_keys($integer_ids, []);
+
+        // 7. Group the flat results by their exercise_id
+        if ($all_results) {
+            foreach ($all_results as $row) {
+                $id = (int) $row['exercise_id'];
+                // We don't need to include the exercise_id in the sub-array
+                unset($row['exercise_id']); 
+                $results[$id][] = $row;
+            }
+        }
+
+        return $results;
+    }
     public function update_results_to_realistic_values(): void
     {
         $table_name = $this->wpdb->prefix . "results";

@@ -47,7 +47,8 @@ class ASTCC_Quiz_Handler
     public function is_time_question($question_post_id)
     {
         $exercise = $this->exercise_from_question_post($question_post_id);
-        return $exercise["is_time"];
+        $is_time = ($exercise["exercise_type"] === "TIME");
+        return $is_time;
     }
 
     /**
@@ -60,7 +61,8 @@ class ASTCC_Quiz_Handler
     {
         $exercise = $this->exercise_from_question_id($question_id);
         error_log("exercise on line 62: " . print_r($exercise, true));
-        return $exercise["is_time"];
+        $is_time = ($exercise["exercise_type"] === "TIME");
+        return $is_time;
     }
 
     

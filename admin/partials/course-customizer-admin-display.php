@@ -3,7 +3,8 @@
 
     <h2>Welcome to Course Customizer</h2>
     <p>This plugin allows you to customize courses by managing exercises and results.</p>
-
+    
+    <p> This is something stupid <p>
 
     <h3>Admin Pages</h3>
     <ul>

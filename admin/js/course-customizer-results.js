@@ -61,6 +61,7 @@ jQuery(document).ready(function ($) {
           <td>${escapeHtml(result.user_name)}</td>
           <td>${escapeHtml(result.exercise_name)}</td>
           <td>${formatResult(result.result, result.is_time == 1)}</td>
+          <td>${formatResult(result.exercise_type)}</td>
           <td>${result.result_date}</td>
           <td>${result.is_metric == 1 ? "Yes" : "No"}</td>
           <td><button class="delete-result" data-id="${result.result_id}">Delete</button></td>

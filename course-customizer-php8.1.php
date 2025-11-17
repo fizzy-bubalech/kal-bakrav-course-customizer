@@ -3,11 +3,11 @@
 /**
  * Plugin Name: Course Customizer php8.1
  * Description: Adds custom database tables for storing additional data and custom filters to inject user result data into courses.
- * Version: 0.2.11
+ * Version: 0.3.0
  * Author: AST
  */
 
-define("COURSE_CUSTOMIZER_VERSION", "0.2.11");
+define("COURSE_CUSTOMIZER_VERSION", "0.3.0");
 
 if (!defined("ABSPATH")) {
     exit(); // Exit if accessed directly
@@ -20,12 +20,14 @@ require_once __DIR__ . "/includes/class-astcc-expression-evaluator.php";
 require_once __DIR__ . "/includes/class-astcc-admin.php";
 require_once __DIR__ . "/includes/class-astcc-data-visualization.php";
 require_once __DIR__ . "/includes/class-astcc-shortcodes.php";
+require_once __DIR__ . "/includes/class-astcc-reports.php";
 
 class Course_Customizer
 {
     private static $instance = null;
     public $database_manager;
     public $quiz_handler;
+    public $report_maker;
     public $utilities;
     public $expression_evaluator;
     public $admin;
@@ -54,6 +56,9 @@ class Course_Customizer
             $this->database_manager
         );
         $this->shortcode_manager = new \CourseCustomizer\ASTCC_Shotcodes(
+            $this->database_manager
+        );
+        $this->shortcode_manager = new \CourseCustomizer\ASTCC_Reports(
             $this->database_manager
         );
 
@@ -145,6 +150,8 @@ class Course_Customizer
             "get_questions_exercise_properties",
         ]);
         $this->database_manager->add_min_max_columns();
+        $this->database_manager->add_exercise_type_column();
+        $this->database_manager->add_exercise_description_column();
     }
 
     public function enqueue_answer_checker_script()
@@ -373,6 +380,7 @@ class Course_Customizer
                 "is_time" => $exercise["is_time"],
                 "min" => $exercise["min"],
                 "max" => $exercise["max"],
+                "exercise_type" => $exercise["exercise_type"]
             ];
         }
 
@@ -439,6 +447,7 @@ class Course_Customizer
                 "is_time" => $question_exercise["is_time"],
                 "min" => $question_exercise["min"],
                 "max" => $question_exercise["max"],
+                "exercise_type" => $question_exercise["exercise_type"],
             ];
         }
 

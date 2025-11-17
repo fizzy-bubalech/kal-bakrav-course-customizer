@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #The plugin folder
-plugin_path=$HOME/Projects/course-customizer-project/course-customizer-php8.1/
+plugin_path=$HOME/Projects/kal-bakrav-course-customizer/
 
 #The plugins folder in the local wordpress instance
-dest_path="/opt/lampp/htdocs/kalbakrav-dev/wp-content/plugins/"
+dest_path="$HOME/Projects/kalbakrav.co.il/wp-content/plugins/"
 
 if [[ -d "$plugin_path" && -d "$dest_path" ]]; then
     echo "Copying plugin folder to local destination"
@@ -12,7 +12,9 @@ if [[ -d "$plugin_path" && -d "$dest_path" ]]; then
     
     if [ $? -eq 0 ]; then
         echo "Copy successful"
-        ls -l "${dest_path}course-customizer-php8.1/"  # Verify the files exist
+        ls -l "${dest_path}kal-bakrav-course-customizer/"  # Verify the files exist
+        sudo rm -r "${dest_path}course-customizer-php8.1"
+        sudo mv "${dest_path}kal-bakrav-course-customizer/" "${dest_path}course-customizer-php8.1" 
         echo "Restarting server"
         sudo /opt/lampp/lampp restart
 
