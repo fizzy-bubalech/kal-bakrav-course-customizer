@@ -176,6 +176,20 @@ function attachQuestionListeners() {
       const inputElement = questionItem.querySelector(
         'input[type="text"], textarea',
       );
+      if(CourseCustomizer.questionsExerciseProperties[questionId].exercise_type == "TEXT"){
+        const radioInputs = questionItem.querySelectorAll(
+          'input[type="radio"]'
+        );
+
+        if (radioInputs.length > 0) {
+          radioInputs.forEach(radioInput => {
+            radioInput.addEventListener("change", (e) =>
+              handleQuestionKeyStroke(e, questionItem, questionId),
+            );
+          });
+          return;
+        }
+      }
       if (inputElement) {
         // Initialize the current answer as empty string instead of null
         CourseCustomizer.currentAnswer = "";
@@ -251,7 +265,15 @@ function getAnswerFromQuestionItem(questionItem) {
         const checkedRadio = questionItem.querySelector(
           'input[type="radio"]:checked',
         );
-        answer = checkedRadio ? checkedRadio.value : null;
+        if (checkedRadio) {
+            let label = checkedRadio.closest('label');
+            if (!label && checkedRadio.id) {
+              label = questionItem.querySelector(`label[for="${checkedRadio.id}"]`);
+            }
+            answer = label ? label.innerText.trim() : checkedRadio.value;
+          } else {
+            answer = null;
+          }
         break;
       case "multiple":
         answer = Array.from(
@@ -388,7 +410,6 @@ function validateAndStoreAnswer(questionId) {
     const min = parseInt(questionExercise.min);
     const max = parseInt(questionExercise.max);
     const exerciseType = questionExercise.exercise_type;
-    console.log(exerciseType);
     const validationResult = isAnswerValid(answer, exerciseType, min, max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
