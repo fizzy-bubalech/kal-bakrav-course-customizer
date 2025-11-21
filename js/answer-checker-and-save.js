@@ -372,7 +372,7 @@ function isAnswerValid(answer, exercise_type, min = 1, max = 9999) {
 
       if (typeof answer === "string") {
         answer = answer.trim();
-        if (answer.lenght > max || answer.length < min) return "תשובה ארוכה מדי";
+        if (answer.length > max || answer.length < min) return "תשובה ארוכה מדי";
       }
     }
 
