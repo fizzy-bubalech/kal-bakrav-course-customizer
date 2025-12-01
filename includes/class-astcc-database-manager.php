@@ -221,7 +221,7 @@ class ASTCC_Database_Manager
       $table_name = $this->wpdb->prefix . 'results';
       $column_name = "result";
       $sql = "ALTER TABLE $table_name MODIFY COLUMN $column_name TEXT";
-      $result = $wpdb->query( $sql );
+      $result = $this->wpdb->query( $sql );
       if ( $result === false ) {
           error_log( "SQL Error: " . $wpdb->last_error );
       }
