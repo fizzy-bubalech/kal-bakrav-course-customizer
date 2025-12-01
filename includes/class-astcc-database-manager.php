@@ -63,7 +63,7 @@ class ASTCC_Database_Manager
             result_id BIGINT(20) NOT NULL AUTO_INCREMENT,
             user_id BIGINT(20) UNSIGNED NOT NULL,
             exercise_id BIGINT(20) NOT NULL,
-            result INT(11) NOT NULL,
+            result TEXT NOT NULL,
             result_date DATETIME NOT NULL,
             is_metric TINYINT(1) NOT NULL,
             PRIMARY KEY (result_id),
@@ -217,6 +217,15 @@ class ASTCC_Database_Manager
     }
 
 
+    public function change_result_datatype_in_result_table(){
+      $table_name = $this->wpdb->prefix . 'results';
+      $column_name = "result";
+      $sql = "ALTER TABLE $table_name MODIFY COLUMN $column_name TEXT";
+      $result = $wpdb->query( $sql );
+      if ( $result === false ) {
+          error_log( "SQL Error: " . $wpdb->last_error );
+      }
+    }
     public function add_min_max_columns(): void
     {
         /*@ Add min and max columns if not exist */
@@ -227,7 +236,8 @@ class ASTCC_Database_Manager
     public function add_exercise_type_column(): void
     {
         /*@ Add Exercise Types column if it does not exist */
-        $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT);
+      $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT);
+
     }
     public function add_exercise_description_column(): void
     {
