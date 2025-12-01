@@ -1,0 +1,43 @@
+name: Create Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers on tags like v1.0, v20.15.10, etc.
+
+permissions:
+  contents: write # Required to create releases and upload assets
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Prepare and Zip Project
+        run: |
+          # 1. Get the tag name (e.g., "v1.0.0")
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          
+          # 2. Define the project name (Change this to your desired root folder name)
+          RELEASE_PROJECT_NAME="course-customizer-php8.1"
+          
+          echo "Preparing release archive for: $RELEASE_PROJECT_NAME Version $TAG_NAME"
+
+          # 4. Create the directory
+          mkdir "$RELEASE_PROJECT_NAME"
+
+          # 5. Copy project files into the new directory
+          # We use rsync to exclude the .git folder and the new folder itself to prevent recursion
+          rsync -av . "$RELEASE_PROJECT_NAME" --exclude .git --exclude "$RELEASE_PROJECT_NAME"
+
+          # 6. Create the zip file
+          zip -r "${RELEASE_PROJECT_NAME}.zip" "$RELEASE_PROJECT_NAME"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./*.zip # Uploads the zip created in the previous step
+          generate_release_notes: true # Auto-generates changelog based on PRs
