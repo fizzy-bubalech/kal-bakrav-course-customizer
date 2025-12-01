@@ -83,6 +83,7 @@
                    <th class="sortable" data-sort="user_name">User <span class="sort-indicator"></span></th>
                    <th class="sortable" data-sort="exercise_name">Exercise <span class="sort-indicator"></span></th>
                    <th class="sortable" data-sort="result">Result <span class="sort-indicator"></span></th>
+                   <th class="sortable" data-sort="result">Type <span class="sort-indicator"></span></th>
                    <th class="sortable" data-sort="result_date">Date <span class="sort-indicator"></span></th>
                    <th class="sortable" data-sort="is_metric">Is Metric <span class="sort-indicator"></span></th>
                    <th>Action</th>

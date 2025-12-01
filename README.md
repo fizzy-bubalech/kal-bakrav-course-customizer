@@ -3,7 +3,7 @@
 ## Description
 
 Course Customizer is a WordPress plugin designed to enhance LearnDash courses with custom exercises, advanced quiz handling, and detailed result tracking. It provides both admin-side management tools and front-end enhancements for quizzes and course content.
-Version: 0.3.1
+Version: 0.3.2
 Author: AST
 
 ## Features
@@ -67,6 +67,10 @@ Put int(EXPRESSION) around a *whole* expression to force an int output.
 
 
 ## Changelog
+
+### 0.3.2
+
+- Saving Text based results to db
 
 ### 0.3.1
 

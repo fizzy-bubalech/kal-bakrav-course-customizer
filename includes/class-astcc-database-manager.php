@@ -586,7 +586,7 @@ class ASTCC_Database_Manager
     public function add_result(
         int $user_id,
         int $exercise_id,
-        int $result,
+        mixed $result,
         string $result_date,
         bool $is_metric
     ): bool {
@@ -601,7 +601,7 @@ class ASTCC_Database_Manager
                 "result_date" => $result_date,
                 "is_metric" => $is_metric,
             ],
-            ["%d", "%d", "%d", "%s", "%d"]
+            ["%d", "%d", "%s", "%s", "%d"]
         );
 
         if ($this->wpdb->last_error) {

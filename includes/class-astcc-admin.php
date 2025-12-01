@@ -246,8 +246,8 @@ class ASTCC_Admin
         $js_file_url =
             plugin_dir_url(dirname(__FILE__)) .
             "admin/js/course-customizer-results.js";
-        $version = file_exists($js_file_path)
-            ? filemtime($js_file_path)
+        $version = file_exists($js_file_url)
+            ? filemtime($js_file_url)
             : "1.0";
 
         wp_enqueue_script(
