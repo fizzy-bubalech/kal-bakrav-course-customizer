@@ -176,7 +176,11 @@ function attachQuestionListeners() {
       const inputElement = questionItem.querySelector(
         'input[type="text"], textarea',
       );
-      if(CourseCustomizer.questionsExerciseProperties[questionId].exercise_type == "TEXT"){
+
+      // FIX: Define properties variable and check if it exists before accessing .exercise_type
+      const questionProps = CourseCustomizer.questionsExerciseProperties[questionId];
+
+      if(questionProps && questionProps.exercise_type == "TEXT"){
         const radioInputs = questionItem.querySelectorAll(
           'input[type="radio"]'
         );
@@ -189,6 +193,8 @@ function attachQuestionListeners() {
           });
           return;
         }
+      } else {
+        console.log("ERROR no exercise types");
       }
       if (inputElement) {
         // Initialize the current answer as empty string instead of null
@@ -371,6 +377,7 @@ function isAnswerValid(answer, exercise_type, min = 1, max = 9999) {
     } else {
 
       if (typeof answer === "string") {
+        console.log("detected a valid text answer")
         answer = answer.trim();
         if (answer.length > max || answer.length < min) return "תשובה ארוכה מדי";
       }
@@ -410,6 +417,7 @@ function validateAndStoreAnswer(questionId) {
     const min = parseInt(questionExercise.min);
     const max = parseInt(questionExercise.max);
     const exerciseType = questionExercise.exercise_type;
+    if(!exerciseType) console.log("ERROR");
     const validationResult = isAnswerValid(answer, exerciseType, min, max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
@@ -425,6 +433,7 @@ function validateAndStoreAnswer(questionId) {
 // Store valid answer
 function storeValidAnswer(answer, questionId) {
   CourseCustomizer.validAnswers[questionId] = answer;
+  console.log(CourseCustomizer.validAnswers);
 }
 
 // Toggle proceed button visibility
@@ -519,6 +528,7 @@ async function init() {
 
     // Set the loaded data to CourseCustomizer
     CourseCustomizer.questionsExerciseProperties = questionProperties;
+    console.log(CourseCustomizer.questionsExerciseProperties);
 
     // Attach listeners only after data is loaded
     attachQuestionListeners();

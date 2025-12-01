@@ -3,11 +3,11 @@
 /**
  * Plugin Name: Course Customizer php8.1
  * Description: Adds custom database tables for storing additional data and custom filters to inject user result data into courses.
- * Version: 0.3.1
+ * Version: 0.3.2
  * Author: AST
  */
 
-define("COURSE_CUSTOMIZER_VERSION", "0.3.1");
+define("COURSE_CUSTOMIZER_VERSION", "0.3.2");
 
 if (!defined("ABSPATH")) {
     exit(); // Exit if accessed directly
@@ -328,10 +328,10 @@ class Course_Customizer
             $current_time = $this->utilities->current_date_time();
             $is_time = $exercise["exercise_type"] == "TIME" ? true : false;
 
-            $result_value = $is_time
-                ? $this->utilities->time_to_seconds($user_answer)
-                : intval($user_answer);
-
+            if($is_time) $result_value = $this->utilities->time_to_seconds($user_answer);
+            else if($exercise["exercise_type"] == "COUNT") $result_value = intval($user_answer);
+            else if($exercise["exercise_type"] == "TEXT") $result_value = sanitize_text_field($user_answer);
+            
             $results[] = [
                 "user_id" => $user_id,
                 "exercise_id" => $exercise_id,
