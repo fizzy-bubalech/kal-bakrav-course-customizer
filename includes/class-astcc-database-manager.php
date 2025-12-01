@@ -237,6 +237,7 @@ class ASTCC_Database_Manager
     {
         /*@ Add Exercise Types column if it does not exist */
       $this->add_column("exercises", "exercise_type", SQLtypes::VARCHAR, 10, ExerciseTypes::COUNT);
+      $this->change_result_datatype_in_result_table();
 
     }
     public function add_exercise_description_column(): void
