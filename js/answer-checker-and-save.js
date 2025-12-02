@@ -108,11 +108,11 @@ function getQuizId() {
     }
 
     const quizMeta = JSON.parse(quizMetaStr);
-    if (!quizMeta.quiz_pro_id) {
+    if (!quizMeta.quiz_post_id) {
       throw new Error("Quiz ID not found in meta data");
     }
-
-    return quizMeta.quiz_pro_id;
+    console.info("Quiz Post ID", quizMeta.quiz_post_id);
+    return quizMeta.quiz_post_id;
   } catch (error) {
     console.error("Error getting quiz ID:", error);
     throw error;
@@ -187,14 +187,16 @@ function attachQuestionListeners() {
 
         if (radioInputs.length > 0) {
           radioInputs.forEach(radioInput => {
-            radioInput.addEventListener("change", (e) =>
-              handleQuestionKeyStroke(e, questionItem, questionId),
-            );
+            radioInput.addEventListener("change", (e) => {
+              console.log("A change has occurred", e.target.value);
+
+              handleQuestionKeyStroke(e, questionItem, questionId);
+            });
           });
           return;
         }
       } else {
-        console.log("ERROR no exercise types");
+        console.debug("Question %s contains an exercise which is not a TEXT type", questionId);
       }
       if (inputElement) {
         // Initialize the current answer as empty string instead of null
@@ -417,7 +419,7 @@ function validateAndStoreAnswer(questionId) {
     const min = parseInt(questionExercise.min);
     const max = parseInt(questionExercise.max);
     const exerciseType = questionExercise.exercise_type;
-    if(!exerciseType) console.log("ERROR");
+    if(!exerciseType) console.error("ERROR: No exercise type is set for the exercise of this question", questionId);
     const validationResult = isAnswerValid(answer, exerciseType, min, max);
     if (validationResult === true) {
       storeValidAnswer(answer, questionId);
@@ -528,7 +530,7 @@ async function init() {
 
     // Set the loaded data to CourseCustomizer
     CourseCustomizer.questionsExerciseProperties = questionProperties;
-    console.log(CourseCustomizer.questionsExerciseProperties);
+    console.log("Question exercies properties", CourseCustomizer.questionsExerciseProperties);
 
     // Attach listeners only after data is loaded
     attachQuestionListeners();
@@ -542,7 +544,7 @@ async function init() {
     // Mark as initialized
     CourseCustomizer.initialized = true;
 
-    console.log("Quiz initialization completed successfully");
+    console.info("Quiz initialization completed successfully");
   } catch (error) {
     console.error("Failed to initialize quiz:", error);
     throw error;
@@ -558,7 +560,7 @@ async function startApplication() {
     // Initialize the application
     await init();
 
-    console.log("Application started successfully");
+    console.info("Course Customizer started successfully");
   } catch (error) {
     console.error("Failed to start application:", error);
   }

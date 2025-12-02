@@ -402,7 +402,6 @@ class Course_Customizer
         }
 
         $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]), associative: true);
-
         $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(
             $quiz_id
         );
@@ -435,23 +434,26 @@ class Course_Customizer
 
         $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]));
 
+        error_log("Quiz ID = ".$quiz_id);
         $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(
             $quiz_id
         );
+        error_log("questions_ids = [".implode(", ", $questions_ids)."]");
+        $response = [];
 
         foreach ($questions_ids as $question_id) {
             $question_exercise = $this->quiz_handler->exercise_from_question_id(
                 $question_id
             );
-            $questions_ids[$question_id] = [
-                "is_time" => $question_exercise["is_time"],
+            $response[$question_id] = [
+                "is_time" => $question_exercise["is_time"] ?? "0",
                 "min" => $question_exercise["min"],
                 "max" => $question_exercise["max"],
                 "exercise_type" => $question_exercise["exercise_type"],
             ];
         }
 
-        wp_send_json_success($questions_ids);
+        wp_send_json_success($response);
     }
 }
 

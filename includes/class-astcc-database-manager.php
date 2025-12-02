@@ -721,13 +721,11 @@ class ASTCC_Database_Manager
      */
     public function get_questions_ids_from_quiz_id(int $quiz_id): array
     {
-        $questions_id = $this->wpdb->get_col(
-            $this->wpdb->prepare(
-                "SELECT id FROM {$this->wpdb->prefix}learndash_pro_quiz_question WHERE quiz_id = %d",
-                $quiz_id
-            )
-        );
-        return $questions_id;
+      $question_ids = learndash_get_quiz_questions($quiz_id);
+        
+      error_log("Questions in db class = [". join(", ", $question_ids)."]");
+
+        return $question_ids;
     }
 
     /**
