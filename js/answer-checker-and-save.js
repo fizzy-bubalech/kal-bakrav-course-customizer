@@ -111,7 +111,7 @@ function getQuizId() {
     if (!quizMeta.quiz_post_id) {
       throw new Error("Quiz ID not found in meta data");
     }
-    console.info("Quiz Post ID", quizMeta.quiz_post_id);
+    //console.info("Quiz Post ID", quizMeta.quiz_post_id);
     return quizMeta.quiz_post_id;
   } catch (error) {
     console.error("Error getting quiz ID:", error);
@@ -188,7 +188,7 @@ function attachQuestionListeners() {
         if (radioInputs.length > 0) {
           radioInputs.forEach(radioInput => {
             radioInput.addEventListener("change", (e) => {
-              console.log("A change has occurred", e.target.value);
+              //console.log("A change has occurred", e.target.value);
 
               handleQuestionKeyStroke(e, questionItem, questionId);
             });
@@ -379,7 +379,7 @@ function isAnswerValid(answer, exercise_type, min = 1, max = 9999) {
     } else {
 
       if (typeof answer === "string") {
-        console.log("detected a valid text answer")
+        //console.log("detected a valid text answer")
         answer = answer.trim();
         if (answer.length > max || answer.length < min) return "תשובה ארוכה מדי";
       }
@@ -435,7 +435,7 @@ function validateAndStoreAnswer(questionId) {
 // Store valid answer
 function storeValidAnswer(answer, questionId) {
   CourseCustomizer.validAnswers[questionId] = answer;
-  console.log(CourseCustomizer.validAnswers);
+  //console.log(CourseCustomizer.validAnswers);
 }
 
 // Toggle proceed button visibility
@@ -530,7 +530,7 @@ async function init() {
 
     // Set the loaded data to CourseCustomizer
     CourseCustomizer.questionsExerciseProperties = questionProperties;
-    console.log("Question exercies properties", CourseCustomizer.questionsExerciseProperties);
+    //console.log("Question exercies properties", CourseCustomizer.questionsExerciseProperties);
 
     // Attach listeners only after data is loaded
     attachQuestionListeners();
