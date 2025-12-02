@@ -189,19 +189,20 @@ function attachQuestionListeners() {
           radioInputs.forEach(radioInput => {
             radioInput.addEventListener("change", (e) => {
               //console.log("A change has occurred", e.target.value);
-
+              radioInput.addEventListener("click", resetCurrentAnswer);
               handleQuestionKeyStroke(e, questionItem, questionId);
             });
           });
           return;
         }
       } else {
-        console.debug("Question %s contains an exercise which is not a TEXT type", questionId);
+        //console.debug("Question %s contains an exercise which is not a TEXT type", questionId);
       }
       if (inputElement) {
         // Initialize the current answer as empty string instead of null
         CourseCustomizer.currentAnswer = "";
-
+        inputElement.addEventListener("focus", resetCurrentAnswer);
+        inputElement.addEventListener("click", resetCurrentAnswer);
         // Add both keyup and input listeners to ensure we catch all changes
         inputElement.addEventListener("keyup", (e) =>
           handleQuestionKeyStroke(e, questionItem, questionId),
@@ -216,6 +217,10 @@ function attachQuestionListeners() {
   });
 
   return true;
+}
+function resetCurrentAnswer() {
+    CourseCustomizer.currentAnswer = null;
+    console.log("Input focused/clicked - Resetting currentAnswer to null");
 }
 // Handle keystrokes in question inputs
 function handleQuestionKeyStroke(e, questionItem, questionId) {
