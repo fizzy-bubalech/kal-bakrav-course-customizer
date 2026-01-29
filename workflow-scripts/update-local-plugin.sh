@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #The plugin folder
-plugin_path=$HOME/Projects/kal-bakrav-course-customizer/
+plugin_path=$HOME/Projects/kal-bakrav-course-customizer/src
 
 #The plugins folder in the local wordpress instance
 dest_path="$HOME/Projects/kalbakrav.co.il/wp-content/plugins/"
@@ -12,9 +12,9 @@ if [[ -d "$plugin_path" && -d "$dest_path" ]]; then
     
     if [ $? -eq 0 ]; then
         echo "Copy successful"
-        ls -l "${dest_path}kal-bakrav-course-customizer/"  # Verify the files exist
+        ls -l "${dest_path}src/"  # Verify the files exist
         sudo rm -r "${dest_path}course-customizer-php8.1"
-        sudo mv "${dest_path}kal-bakrav-course-customizer/" "${dest_path}course-customizer-php8.1" 
+        sudo mv "${dest_path}src/" "${dest_path}course-customizer-php8.1" 
         echo "Restarting server"
         sudo /opt/lampp/lampp restart
 
