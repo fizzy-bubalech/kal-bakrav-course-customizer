@@ -25,9 +25,11 @@ jobs:
 
           mkdir "$RELEASE_PROJECT_NAME"
 
-          rsync -av ./src/ README* LICENSE* "$RELEASE_PROJECT_NAME" 
+          rsync -av --exclude='vendor' ./src/ README* LICENSE* "$RELEASE_PROJECT_NAME" 
 
-          zip -r "${RELEASE_PROJECT_NAME}.zip" "$RELEASE_PROJECT_NAME"
+          composer install --working-dir="$RELEASE_PROJECT_NAME" --no-dev --optimize-autoloader
+
+          zip -r "${RELEASE_PROJECT_NAME}.zip" "$RELEASE_PROJECT_NAME" -x@.distignore
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
