@@ -53,26 +53,33 @@ function disableAllQuizNavigationButtons() {
     throw error;
   }
 }
-
+function add_procced_button_tooltip(procced_button){
+    const wrapper = document.createElement('span');
+    wrapper.style.display = 'inline-block';
+    wrapper.style.position = 'relative'; 
+    wrapper.style.cursor = 'not-allowed';
+    procced_button.parentNode.insertBefore(wrapper, procced_button);
+    wrapper.appendChild(procced_button);
+}
 function add_checkbox() {
   let checkSingleButton = document.querySelector(
     '.wpProQuiz_button[name="checkSingle"]',
   );
 
+  //submition warning checkbox
   if (!checkSingleButton) return;
-  // Create checkbox
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.id = "confirmCheckbox";
-  checkbox.style.marginRight = "5px"; // Add some space between checkbox and label
+  checkbox.style.marginRight = "5px"; 
 
-  // Create label
+  //submition warning label
   const label = document.createElement("label");
   label.dir = "rtl";
   label.htmlFor = "confirmCheckbox";
   label.textContent = "לא תוכל לבצע הזנת תוצאות נוספת! אתה בטוח בנתונים שהזנת?";
 
-  // Insert them directly before the button
+  // putting the submition warning checkbox and label right before the submition button
   checkSingleButton.parentNode.insertBefore(label, checkSingleButton);
   checkSingleButton.parentNode.insertBefore(checkbox, label);
 
@@ -344,7 +351,7 @@ function showAnswerPopup(inputElement, message, isValid) {
 
     setTimeout(() => {
       popup.remove();
-    }, 3000);
+    }, 5000);
   } catch (error) {
     console.error("Error showing answer popup:", error);
   }
@@ -445,7 +452,6 @@ function storeValidAnswer(answer, questionId) {
 
 // Toggle proceed button visibility
 function toggleProceedButtonVisibility(button, isValid) {
-  let confirmCheckBox = document.getElementById("confirmCheckbox");
   if (button) {
     button.disabled = !isValid;
   }
