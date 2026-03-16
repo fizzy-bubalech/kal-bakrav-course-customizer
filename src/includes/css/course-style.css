@@ -1,0 +1,22 @@
+/* Hide all completed quizzes */
+.learndash-complete:has(.ld-table-list-item-quiz) {
+    display: none;
+}
+/* Re-show any completed quiz that follows another completed quiz (i.e. not the first one) */
+.learndash-complete:has(.ld-table-list-item-quiz) ~ .learndash-complete:has(.ld-table-list-item-quiz) {
+    display: revert;
+}
+
+/* Selects .incomplete-learndash that either:
+   1. follows another .incomplete-learndash, OR
+   2. is the last child */
+.learndash-incomplete:where(.learndash-incomplete + .learndash-incomplete) a,
+.incomplete-learndash:last-child a{
+    pointer-events: none;
+    cursor: default;
+}
+
+.learndash-incomplete:where(.learndash-incomplete + .learndash-incomplete) .ld-item-title,
+.incomplete-learndash:last-child .ld-item-title{
+filter: blur(0.5rem) !important;
+}

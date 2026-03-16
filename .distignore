@@ -1,0 +1,15 @@
+.git
+.gitignore
+.distignore
+
+.github
+
+composer.json
+composer.lock
+phpcs.xml.dist
+phpunit.xml.dist
+tests
+bin
+
+docs
+workflow-scripts
