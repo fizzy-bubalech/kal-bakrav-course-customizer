@@ -524,15 +524,23 @@ function handleButtonClick(e) {
     console.error("Error handling button click:", error);
   }
 }
-
+/**
+ * Returns true if at least one question in the properties map has a
+ * non-null exercise_type, meaning the quiz contains special (tracked) questions.
+ *
+ * @param {Object} questionProperties - Map of question_id → { exercise_type, ... }
+ * @returns {boolean}
+ */
+function allSpecialQuestions(questionProperties) {
+  return Object.values(questionProperties).every(
+    (props) => props && props.exercise_type !== null && props.exercise_type !== undefined,
+  );
+}
 // Main initialization function
 async function init() {
   try {
     // Validate dependencies first
     validateDependencies();
-
-    // Disable navigation buttons
-    disableAllQuizNavigationButtons();
 
     // Load all required data concurrently
     const [questionProperties] = await Promise.all([
@@ -542,7 +550,13 @@ async function init() {
     // Set the loaded data to CourseCustomizer
     CourseCustomizer.questionsExerciseProperties = questionProperties;
     //console.log("Question exercies properties", CourseCustomizer.questionsExerciseProperties);
-
+    
+    if(!allSpecialQuestions(questionProperties)){
+      console.log("Not all special questions, skipping.");
+      return;
+    }
+    // Disable navigation buttons
+    disableAllQuizNavigationButtons();
     // Attach listeners only after data is loaded
     attachQuestionListeners();
 
