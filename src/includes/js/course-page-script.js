@@ -40,12 +40,11 @@ function disable_next_button() {
         });
     }
 }
-
+ 
 async function startScript() {
     try {
         // Ensure DOM is ready before starting
         await ensureDOMReady();
-        
         // Initialize the application
         await disable_next_button();
         
