@@ -5,13 +5,12 @@ up:
     sudo systemctl start docker
     ddev start
 
+[working-directory: '/home/ast/Projects/kalbakrav.co.il']
 down:
-    cd ~/Projects/kalbakrav.co.il
-
     ddev stop
     sudo systemctl stop docker
     sudo systemctl stop docker.socket
 
+[working-directory: '/home/ast/Projects/kalbakrav.co.il']
 restart:
-    cd ~/Projects/kalbakrav.co.il
     ddev restart
