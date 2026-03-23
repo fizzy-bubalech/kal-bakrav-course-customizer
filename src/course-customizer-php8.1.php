@@ -58,7 +58,7 @@ class Course_Customizer
         $this->shortcode_manager = new \CourseCustomizer\ASTCC_Shotcodes(
             $this->database_manager
         );
-        $this->shortcode_manager = new \CourseCustomizer\ASTCC_Reports(
+        $this->report_maker = new \CourseCustomizer\ASTCC_Reports(
             $this->database_manager
         );
 
@@ -206,7 +206,7 @@ class Course_Customizer
             $script_handle,
             plugin_dir_url(__FILE__) . "{$script_dir}{$script_filename}",
             ["jquery"],
-            filemtime(plugin_dir_path(__FILE__) . "{$script_dir}.{$script_filename}"),
+            filemtime(plugin_dir_path(__FILE__) . "{$script_dir}{$script_filename}"),
             true
         );
 
@@ -314,6 +314,10 @@ class Course_Customizer
 
         $results = [];
         $user_id = get_current_user_id();
+		error_log('Save function reached');
+		error_log('POST data: ' . print_r($_POST, true));
+		error_log('Nonce valid: ' . (wp_verify_nonce($_POST['nonce'], "my_ajax_nonce") ? 'yes' : 'no'));
+		
 
         foreach ($quiz_data as $questionId => $user_answer) {
             $exercise = $this->quiz_handler->exercise_from_question_id(
@@ -344,6 +348,7 @@ class Course_Customizer
         $insert_result = $this->database_manager->insert_results_into_wp_results_table(
             $results
         );
+		
 
         if ($insert_result === false) {
             wp_send_json_error("Error saving quiz results");

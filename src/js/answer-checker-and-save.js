@@ -512,7 +512,7 @@ function handleButtonClick(e) {
     if (!e.target.classList.contains("wpProQuiz_button")) return;
 
     const buttonText = e.target.value || e.target.textContent.trim();
-    const isFinishButton = ["Finish Quiz", "סיים מבחן"].includes(buttonText);
+    const isFinishButton = ["Finish Quiz", "סיים מבדק"].includes(buttonText);
     const isBackButton = buttonText === "back" || e.target.name === "back";
 
     if (isFinishButton) {
