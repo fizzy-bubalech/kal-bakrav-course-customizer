@@ -22,6 +22,7 @@ jobs:
           RELEASE_PROJECT_NAME="course-customizer-php8.1"
           
           echo "Preparing release archive for: $RELEASE_PROJECT_NAME Version $TAG_NAME"
+
           mkdir "$RELEASE_PROJECT_NAME"
 
           rsync -av --exclude='vendor' ./src/ README* LICENSE* "$RELEASE_PROJECT_NAME" 
