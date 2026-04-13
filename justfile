@@ -14,3 +14,11 @@ down:
 [working-directory: '/home/ast/Projects/kalbakrav.co.il']
 restart:
     ddev restart
+
+dev2main:
+  git fetch --all
+  git checkout main 
+  git rm -rf .
+  git checkout dev -- .
+  git commit 
+  git push origin main
