@@ -20,5 +20,6 @@ dev2main:
   git checkout main 
   git rm -rf .
   git checkout dev -- .
+  git rm -rf workflow-scripts/
   git commit 
   git push origin main
