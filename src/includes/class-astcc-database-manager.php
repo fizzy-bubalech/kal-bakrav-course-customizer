@@ -107,7 +107,7 @@ class ASTCC_Database_Manager
         $this->update_custom_table_entry("exercises", $data, $where, $data_format, $where_format);
     }
 
-    public function update_exercise_min(int $min = null, int $exercise_id)
+    public function update_exercise_min(int $exercise_id, ?int $min)
     {
         $exercise = $this->get_exercise_by_id($exercise_id);
         $data = [

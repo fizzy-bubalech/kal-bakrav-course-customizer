@@ -3,6 +3,7 @@
 
     <h2>Add New Exercise</h2>
     <form method="post" action="">
+        <?php wp_nonce_field('nonce', 'astcc_exercise_nonce'); ?>
         <table class="form-table">
             <tr>
                 <th scope="row"><label for="exercise_name">Exercise Name</label></th>
@@ -60,6 +61,7 @@
                     <td><?php echo $exercise['exercise_description'] ?></td>
                     <td>
                         <form method="post" action="" onsubmit="return confirm('Are you sure you want to delete this exercise?');">
+                            <?php wp_nonce_field('nonce', 'astcc_exercise_nonce'); ?>
                             <input type="hidden" name="exercise_id" value="<?php echo esc_attr($exercise['exercise_id']); ?>">
                             <?php submit_button('Delete', 'delete', 'delete_exercise', false); ?>
                         </form>

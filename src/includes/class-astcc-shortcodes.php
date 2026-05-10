@@ -53,6 +53,9 @@ class ASTCC_Shotcodes
         }
 
         $url = esc_url_raw(trim($url));
+        if (!wp_validate_redirect($url, false)) {
+            $url = home_url();
+        }
 
         error_log('Processed URL: ' . $url);
 
