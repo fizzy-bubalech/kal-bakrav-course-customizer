@@ -3,11 +3,11 @@
 /**
  * Plugin Name: Course Customizer php8.1
  * Description: Adds custom database tables for storing additional data and custom filters to inject user result data into courses.
- * Version: 0.3.5
+ * Version: 0.3.6
  * Author: AST
  */
 
-define("COURSE_CUSTOMIZER_VERSION", "0.3.5");
+define("COURSE_CUSTOMIZER_VERSION", "0.3.6");
 
 if (!defined("ABSPATH")) {
     exit(); // Exit if accessed directly
@@ -51,7 +51,7 @@ class Course_Customizer
             $this->database_manager
         );
         $this->admin->init_ajax_handlers();
-
+        $this->admin->register_ajax_handlers();
         $this->data_visualization = new \CourseCustomizer\ASTCC_Data_Visualization(
             $this->database_manager
         );
@@ -116,36 +116,16 @@ class Course_Customizer
             $this,
             "ajax_validate_quiz_answers",
         ]);
-        add_action("wp_ajax_nopriv_ajax_validate_quiz_answers", [
-            $this,
-            "ajax_validate_quiz_answers",
-        ]);
         add_action("wp_ajax_save_quiz_results", [$this, "save_quiz_results"]);
-        add_action("wp_ajax_nopriv_save_quiz_results", [
-            $this,
-            "save_quiz_results",
-        ]);
 
         add_action("wp_ajax_get_db_variables", [$this, "get_db_variables"]);
-        add_action("wp_ajax_nopriv_get_db_variables", [
-            $this,
-            "get_db_variables",
-        ]);
 
         add_action("wp_ajax_get_questions_is_time", [
             $this,
             "get_questions_is_time",
         ]);
-        add_action("wp_ajax_nopriv_get_questions_is_time", [
-            $this,
-            "get_questions_is_time",
-        ]);
 
         add_action("wp_ajax_get_questions_exercise_properties", [
-            $this,
-            "get_questions_exercise_properties",
-        ]);
-        add_action("wp_ajax_nopriv_get_questions_exercise_properties", [
             $this,
             "get_questions_exercise_properties",
         ]);
@@ -263,6 +243,10 @@ class Course_Customizer
      */
     public function ajax_validate_quiz_answers()
     {
+        check_ajax_referer("my_ajax_nonce", "nonce");
+        if(!current_user_can('read_private_posts')){
+          wp_die("unautherized");
+        }
         if (!isset($_POST["userAnswer"]) || !isset($_POST["question_id"])) {
             wp_send_json_error(["message" => "Missing required parameters"]);
             wp_die();
@@ -295,6 +279,14 @@ class Course_Customizer
      */
     public function save_quiz_results()
     {
+        check_ajax_referer("my_ajax_nonce", "nonce");
+
+        $user_id = get_current_user_id();
+        if (!$user_id) {
+            wp_send_json_error("Must be logged in");
+            return;
+        }
+
         if (headers_sent()) {
             wp_send_json_error("Headers already sent");
             return;
@@ -359,9 +351,15 @@ class Course_Customizer
             // Clean up the stored URL after retrieving it
             delete_option('quiz_completion_redirect_' . $user_id);
 
+            if ($redirect_url && wp_validate_redirect($redirect_url, false)) {
+                $safe_redirect_url = wp_validate_redirect($redirect_url, home_url());
+            } else {
+                $safe_redirect_url = null;
+            }
+
             wp_send_json_success([
                 "message" => "Quiz results saved successfully",
-                "redirect_url" => $redirect_url
+                "redirect_url" => $safe_redirect_url
             ]);
         }
         wp_die();
@@ -376,6 +374,9 @@ class Course_Customizer
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
+        if(!current_user_can('read_private_posts')){
+          wp_die("unautherized");
+        }
         $exercises = $this->database_manager->get_all_exercises();
         $db_variables = [];
 
@@ -401,12 +402,15 @@ class Course_Customizer
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
+        if(!current_user_can('read_private_posts')){
+          wp_die("unautherized");
+        }
         if (!isset($_POST["quiz_id"])) {
             wp_send_json_error("The quiz ID is missing or null");
             return;
         }
 
-        $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]), associative: true);
+        $quiz_id = intval($_POST["quiz_id"]);
         $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(
             $quiz_id
         );
@@ -432,12 +436,15 @@ class Course_Customizer
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
+        if(!current_user_can('read_private_posts')){
+          wp_die("unautherized");
+        }
         if (!isset($_POST["quiz_id"])) {
             wp_send_json_error("The quiz ID is missing or null");
             return;
         }
 
-        $quiz_id = json_decode(json: stripslashes(string: $_POST["quiz_id"]));
+        $quiz_id = intval($_POST["quiz_id"]);
 
         error_log("Quiz ID = ".$quiz_id);
         $questions_ids = $this->database_manager->get_questions_ids_from_quiz_id(

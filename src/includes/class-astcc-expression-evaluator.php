@@ -43,7 +43,7 @@ class ASTCC_Expression_Evaluator
     public function eval_on_page_expressions($content)
     {
         return preg_replace_callback(
-            "/%%\s*(.*?)\s*%%/",
+            '/%%\s*(.*?\$[a-zA-Z_].*?)\s*%%/',
             [$this, "process_expression"],
             $content
         );

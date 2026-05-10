@@ -3,6 +3,8 @@
 
     <h2>Add New Result</h2>
     <form method="post" action="">
+
+        <?php wp_nonce_field('nonce', 'astcc_results_nonce'); ?>
         <table class="form-table">
             <tr>
                 <th scope="row"><label for="user_id">User</label></th>

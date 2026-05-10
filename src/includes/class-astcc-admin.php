@@ -113,6 +113,15 @@ class ASTCC_Admin
     public function display_exercises_page()
     {
         if (isset($_POST["add_exercise"])) {
+            if (!isset($_POST['astcc_exercise_nonce']) ||
+                !wp_verify_nonce($_POST['astcc_exercise_nonce'], 'nonce')) {
+                wp_die('Security check failed');
+            }
+
+            if (!current_user_can("manage_options")) {
+                wp_die('Unauthorized');
+                return;
+            }
             $exercise_name = sanitize_text_field($_POST["exercise_name"]);
             $is_time = isset($_POST["is_time"]) ? 1 : 0;
             $min = isset($_POST["min"]) ? intval($_POST["min"]) : 0;
@@ -121,6 +130,16 @@ class ASTCC_Admin
             $exercise_description = sanitize_text_field($_POST['description']);
             $this->database_manager->add_exercise($exercise_name, $is_time, $min, $max, $exercise_type, $exercise_description);
         } elseif (isset($_POST["delete_exercise"])) {
+
+            if (!isset($_POST['astcc_exercise_nonce']) ||
+                !wp_verify_nonce($_POST['astcc_exercise_nonce'], 'nonce')) {
+                wp_die('Security check failed');
+            }
+
+            if (!current_user_can("manage_options")) {
+                wp_die('Unauthorized');
+                return;
+            }
             $exercise_id = intval($_POST["exercise_id"]);
             $this->database_manager->delete_exercise($exercise_id);
         }
@@ -222,6 +241,16 @@ class ASTCC_Admin
     public function display_results_page()
     {
         if (isset($_POST["add_result"])) {
+
+            if (!isset($_POST['astcc_results_nonce']) ||
+                !wp_verify_nonce($_POST['astcc_results_nonce'], 'nonce')) {
+                wp_die('Security check failed');
+            }
+
+            if (!current_user_can("manage_options")) {
+                wp_die('Unauthorized');
+                return;
+            }
             $user_id = intval($_POST["user_id"]);
             $exercise_id = intval($_POST["exercise_id"]);
             $result = intval($_POST["result"]);
@@ -235,6 +264,16 @@ class ASTCC_Admin
                 $is_metric
             );
         } elseif (isset($_POST["delete_result"])) {
+
+            if (!isset($_POST['astcc_results_nonce']) ||
+                !wp_verify_nonce($_POST['astcc_results_nonce'], 'nonce')) {
+                wp_die('Security check failed');
+            }
+
+            if (!current_user_can("manage_options")) {
+                wp_die('Unauthorized');
+                return;
+            }
             $result_id = intval($_POST["result_id"]);
             $this->database_manager->delete_result($result_id);
         }
@@ -346,10 +385,6 @@ class ASTCC_Admin
     public function init_ajax_handlers()
     {
         add_action("wp_ajax_get_filtered_results", [
-            $this,
-            "handle_ajax_request",
-        ]);
-        add_action("wp_ajax_nopriv_get_filtered_results", [
             $this,
             "handle_ajax_request",
         ]);

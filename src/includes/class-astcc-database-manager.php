@@ -107,7 +107,7 @@ class ASTCC_Database_Manager
         $this->update_custom_table_entry("exercises", $data, $where, $data_format, $where_format);
     }
 
-    public function update_exercise_min(int $min = null, int $exercise_id)
+    public function update_exercise_min(int $exercise_id, ?int $min)
     {
         $exercise = $this->get_exercise_by_id($exercise_id);
         $data = [
@@ -136,7 +136,7 @@ class ASTCC_Database_Manager
         }
 
         // Validate table exists
-        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'");
+        $table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name));
         if (!$table_exists) {
             return new WP_Error('invalid_table', "Table $table_name does not exist.");
         }
@@ -181,7 +181,14 @@ class ASTCC_Database_Manager
         $marks_table_name = $this->wpdb->prefix . $table_name;
 
 
-        $is_col = $this->wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$marks_table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = '{$column_name}'");
+       $is_col = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = %s AND TABLE_SCHEMA = %s AND COLUMN_NAME = %s",
+                $marks_table_name,
+                $dbname,
+                $column_name
+            )
+        );
         $type_size = "{$type->value}" . "({$size})";
         $no_size_types = ['TEXT', 'DATE', 'DATETIME', 'TIMESTAMP', 'BOOLEAN', 'TINYINT'];
         if (empty($is_col)) {
