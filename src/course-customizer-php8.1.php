@@ -263,6 +263,7 @@ class Course_Customizer
      */
     public function ajax_validate_quiz_answers()
     {
+        check_ajax_referer("my_ajax_nonce", "nonce");
         if (!isset($_POST["userAnswer"]) || !isset($_POST["question_id"])) {
             wp_send_json_error(["message" => "Missing required parameters"]);
             wp_die();
@@ -295,6 +296,8 @@ class Course_Customizer
      */
     public function save_quiz_results()
     {
+
+        check_ajax_referer("my_ajax_nonce", "nonce");
         if (headers_sent()) {
             wp_send_json_error("Headers already sent");
             return;
