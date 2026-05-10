@@ -3,7 +3,7 @@
         'name' => 'fizzy-bubalech/course-customizer',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '9fc0a5909436dd69701a5557585e1be4814c7547',
+        'reference' => '9bf591cfdc8fbaeb7264cf8d1e2aa52fb7e4c53c',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'fizzy-bubalech/course-customizer' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '9fc0a5909436dd69701a5557585e1be4814c7547',
+            'reference' => '9bf591cfdc8fbaeb7264cf8d1e2aa52fb7e4c53c',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
