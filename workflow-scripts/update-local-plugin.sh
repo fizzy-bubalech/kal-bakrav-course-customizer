@@ -15,6 +15,7 @@ if [[ -d "$plugin_path" && -d "$dest_path" ]]; then
         ls -l "${dest_path}src/"  # Verify the files exist
         sudo rm -r "${dest_path}course-customizer-php8.1"
         sudo mv "${dest_path}src/" "${dest_path}course-customizer-php8.1" 
+        sudo chmod -R 777 ./*
         #echo "Restarting server"
         #sudo /opt/lampp/lampp restart
 

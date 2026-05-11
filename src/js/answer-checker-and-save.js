@@ -206,6 +206,12 @@ function attachQuestionListeners() {
         //console.debug("Question %s contains an exercise which is not a TEXT type", questionId);
       }
       if (inputElement) {
+        // For TIME questions, swap the single text box for paired minute/second
+        // inputs that pipe their combined value back into the original input.
+        if (questionProps && questionProps.exercise_type === "TIME") {
+          setupTimeInputs(questionItem, inputElement);
+        }
+
         // Initialize the current answer as empty string instead of null
         CourseCustomizer.currentAnswer = "";
         inputElement.addEventListener("focus", resetCurrentAnswer);
@@ -229,6 +235,89 @@ function resetCurrentAnswer() {
     CourseCustomizer.currentAnswer = null;
     console.log("Input focused/clicked - Resetting currentAnswer to null");
 }
+
+// For TIME questions: hide the single text box and replace it with two number
+// inputs (minutes + seconds). Their combined value is piped back into the
+// original (now hidden) input as "MM:SS", and synthetic input/keyup events are
+// dispatched on it so the rest of the pipeline (validation, popup, storage)
+// keeps working as if the user typed directly into the original box.
+function setupTimeInputs(questionItem, originalInput) {
+  // Hide the original text input but keep it in the DOM so all existing
+  // selectors and listeners continue to work.
+  originalInput.style.display = "none";
+
+  // Container for the new dual-input UI, RTL to match the rest of the quiz.
+  const container = document.createElement("div");
+  container.className = "time-input-container";
+  container.dir = "rtl";
+  container.style.cssText =
+    "display: inline-flex; gap: 12px; align-items: center; margin: 5px 0;";
+
+  function makeField(labelText, className, max) {
+    const wrap = document.createElement("span");
+    wrap.style.cssText = "display: inline-flex; align-items: center; gap: 5px;";
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    if (max !== undefined) input.max = String(max);
+    input.placeholder = "00";
+    input.inputMode = "numeric";
+    input.className = className;
+    input.style.cssText =
+      "width: 60px; text-align: center; padding: 4px; font-size: 16px;";
+
+    const label = document.createElement("label");
+    label.textContent = labelText;
+
+    wrap.appendChild(input);
+    wrap.appendChild(label);
+    return { wrap, input };
+  }
+
+  // Minutes capped at 59 to match the TIME regex (([0-5]?\d) for the minutes
+  // group). Seconds also 0-59. Anything outside that range would fail
+  // validation anyway.
+  const minutesField = makeField("דקות", "time-minutes-input", 59);
+  const secondsField = makeField("שניות", "time-seconds-input", 59);
+
+  container.appendChild(minutesField.wrap);
+  container.appendChild(secondsField.wrap);
+
+  // Insert the new UI right after the original input.
+  originalInput.parentNode.insertBefore(container, originalInput.nextSibling);
+
+  // Tell showAnswerPopup to anchor against the visible container instead of
+  // the hidden original input (whose bounding rect would be at 0,0).
+  originalInput._popupAnchor = container;
+
+  // Combine the two fields into "MM:SS" and push the value through the
+  // original input, dispatching the same events real typing would produce.
+  function syncToOriginalInput() {
+    const minutes = minutesField.input.value.trim();
+    const seconds = secondsField.input.value.trim();
+
+    let combined = "";
+    if (minutes !== "" || seconds !== "") {
+      // Empty side defaults to "0" so the result always has minutes,
+      // which the TIME validator requires.
+      const m = minutes === "" ? "0" : minutes;
+      const s = seconds === "" ? "0" : seconds;
+      combined = `${m}:${s}`;
+    }
+
+    originalInput.value = combined;
+    originalInput.dispatchEvent(new Event("input", { bubbles: true }));
+    originalInput.dispatchEvent(new Event("keyup", { bubbles: true }));
+  }
+
+  [minutesField.input, secondsField.input].forEach((inp) => {
+    inp.addEventListener("input", syncToOriginalInput);
+    inp.addEventListener("focus", resetCurrentAnswer);
+    inp.addEventListener("click", resetCurrentAnswer);
+  });
+}
+
 // Handle keystrokes in question inputs
 function handleQuestionKeyStroke(e, questionItem, questionId) {
   try {
@@ -243,8 +332,11 @@ function handleQuestionKeyStroke(e, questionItem, questionId) {
         'input[type="text"], textarea',
       );
       if (inputElement) {
+        // For TIME questions the original input is hidden, so anchor the popup
+        // to the visible minute/second container instead.
+        const popupAnchor = inputElement._popupAnchor || inputElement;
         showAnswerPopup(
-          inputElement,
+          popupAnchor,
           validationResult === true ? "✓" : validationResult,
           validationResult === true,
         );
