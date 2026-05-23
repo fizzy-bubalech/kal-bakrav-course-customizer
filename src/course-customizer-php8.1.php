@@ -244,7 +244,7 @@ class Course_Customizer
     public function ajax_validate_quiz_answers()
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
-        if(!current_user_can('read_private_posts')){
+        if(!current_user_can('read')){
           wp_die("unautherized");
         }
         if (!isset($_POST["userAnswer"]) || !isset($_POST["question_id"])) {
@@ -374,7 +374,7 @@ class Course_Customizer
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
-        if(!current_user_can('read_private_posts')){
+        if(!current_user_can('read')){
           wp_die("unautherized");
         }
         $exercises = $this->database_manager->get_all_exercises();
@@ -402,7 +402,7 @@ class Course_Customizer
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
-        if(!current_user_can('read_private_posts')){
+        if(!current_user_can('read')){
           wp_die("unautherized");
         }
         if (!isset($_POST["quiz_id"])) {
@@ -436,7 +436,7 @@ class Course_Customizer
     {
         check_ajax_referer("my_ajax_nonce", "nonce");
 
-        if(!current_user_can('read_private_posts')){
+        if(!current_user_can('read')){
           wp_die("unautherized");
         }
         if (!isset($_POST["quiz_id"])) {
